@@ -2753,8 +2753,18 @@ pcap_activate(pcap_t *p)
 	return (status);
 }
 
-pcap_t *
-pcap_open_live(const char *device, int snaplen, int promisc, int to_ms, char *errbuf)
+/**
+ * 打开一个保存文件、本地设备或远程运行 RPCAP 服务器的设备。
+ *
+ * @param device 设备名称或设备 URL
+ * @param snaplen 捕获数据包的最大长度
+ * @param promisc 是否开启混杂模式
+ * @param to_ms 超时时间（毫秒）
+ * @param errbuf 错误信息缓冲区
+ *
+ * @return 成功时返回 pcap_t 结构体指针，失败时返回 NULL
+ */
+pcap_t *pcap_open_live(const char *device, int snaplen, int promisc, int to_ms, char *errbuf)
 {
 	pcap_t *p;
 	int status;
@@ -2765,47 +2775,37 @@ pcap_open_live(const char *device, int snaplen, int promisc, int to_ms, char *er
 	int srctype;
 
 	/*
-	 * A null device name is equivalent to the "any" device -
-	 * which might not be supported on this platform, but
-	 * this means that you'll get a "not supported" error
-	 * rather than, say, a crash when we try to dereference
-	 * the null pointer.
+	 * 如果设备名称为 NULL，则等同于使用 "any" 设备，
+	 * 这可能在某些平台上不受支持，但这意味着当我们尝试解引用空指针时，你会得到一个"不支持"的错误，而不是崩溃。
 	 */
 	if (device == NULL)
 		device = "any";
 
 	/*
-	 * Retrofit - we have to make older applications compatible with
-	 * remote capture.
-	 * So we're calling pcap_open_remote() from here; this is a very
-	 * dirty hack.
-	 * Obviously, we cannot exploit all the new features; for instance,
-	 * we cannot send authentication, we cannot use a UDP data connection,
-	 * and so on.
+	 * Retrofit - 我们必须使旧应用程序与远程捕获兼容。
+	 * 因此，我们从这里调用 pcap_open_rpcap()；这是一个非常不规范的做法。
+	 * 显然，我们不能利用所有新功能；例如，我们不能发送身份验证信息，不能使用 UDP 数据连接等等。
 	 */
 	if (pcap_parsesrcstr(device, &srctype, host, port, name, errbuf))
 		return (NULL);
 
 	if (srctype == PCAP_SRC_IFREMOTE) {
 		/*
-		 * Although we already have host, port and iface, we prefer
-		 * to pass only 'device' to pcap_open_rpcap(), so that it has
-		 * to call pcap_parsesrcstr() again.
-		 * This is less optimized, but much clearer.
+		 * 虽然我们已经有了 host、port 和 iface，但我们更喜欢只传递 'device' 给 pcap_open_rpcap()，
+		 * 这样它就必须再次调用 pcap_parsesrcstr()。
+		 * 这样做不太优化，但更加清晰。
 		 */
 		return (pcap_open_rpcap(device, snaplen,
 		    promisc ? PCAP_OPENFLAG_PROMISCUOUS : 0, to_ms,
 		    NULL, errbuf));
 	}
 	if (srctype == PCAP_SRC_FILE) {
-		snprintf(errbuf, PCAP_ERRBUF_SIZE, "unknown URL scheme \"file\"");
+		snprintf(errbuf, PCAP_ERRBUF_SIZE, "未知的 URL 方案 \"file\"");
 		return (NULL);
 	}
 	if (srctype == PCAP_SRC_IFLOCAL) {
 		/*
-		 * If it starts with rpcap://, that refers to a local device
-		 * (no host part in the URL). Remove the rpcap://, and
-		 * fall through to the regular open path.
+		 * 如果以 rpcap:// 开头，表示引用的是本地设备（URL 中没有主机部分）。去掉 rpcap://，然后继续常规的打开路径。
 		 */
 		if (strncmp(device, PCAP_SRC_IF_STRING, strlen(PCAP_SRC_IF_STRING)) == 0) {
 			size_t len = strlen(device) - strlen(PCAP_SRC_IF_STRING) + 1;
@@ -2829,14 +2829,8 @@ pcap_open_live(const char *device, int snaplen, int promisc, int to_ms, char *er
 	if (status < 0)
 		goto fail;
 	/*
-	 * Mark this as opened with pcap_open_live(), so that, for
-	 * example, we show the full list of DLT_ values, rather
-	 * than just the ones that are compatible with capturing
-	 * when not in monitor mode.  That allows existing applications
-	 * to work the way they used to work, but allows new applications
-	 * that know about the new open API to, for example, find out the
-	 * DLT_ values that they can select without changing whether
-	 * the adapter is in monitor mode or not.
+	 * 将此标记为使用 pcap_open_live() 打开的，这样，例如，我们将显示完整的 DLT_ 值列表，而不仅仅是与非监控模式下捕获兼容的值。
+	 * 这允许现有应用程序按照它们过去的方式工作，但允许了解新的打开 API 的新应用程序，例如，找出可以选择的 DLT_ 值，而不必更改适配器是否处于监控模式。
 	 */
 	p->oldstyle = 1;
 	status = pcap_activate(p);
@@ -2846,8 +2840,7 @@ pcap_open_live(const char *device, int snaplen, int promisc, int to_ms, char *er
 fail:
 	if (status == PCAP_ERROR) {
 		/*
-		 * Another buffer is a bit cumbersome, but it avoids
-		 * -Wformat-truncation.
+		 * 另一个缓冲区有点麻烦，但它避免了 -Wformat-truncation。
 		 */
 		char trimbuf[PCAP_ERRBUF_SIZE - 5]; /* 2 bytes shorter */
 
@@ -2858,12 +2851,11 @@ fail:
 	    status == PCAP_ERROR_PERM_DENIED ||
 	    status == PCAP_ERROR_PROMISC_PERM_DENIED) {
 		/*
-		 * Only show the additional message if it's not
-		 * empty.
+		 * 仅在附加消息不为空时显示附加消息。
 		 */
 		if (p->errbuf[0] != '\0') {
 			/*
-			 * Idem.
+			 * 同上。
 			 */
 			char trimbuf[PCAP_ERRBUF_SIZE - 8]; /* 2 bytes shorter */
 
@@ -2882,6 +2874,7 @@ fail:
 	pcap_close(p);
 	return (NULL);
 }
+*/
 
 pcap_t *
 pcap_open_offline_common(char *ebuf, size_t total_size, size_t private_offset)

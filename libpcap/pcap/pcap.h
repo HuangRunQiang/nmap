@@ -1,68 +1,37 @@
 /* -*- Mode: c; tab-width: 8; indent-tabs-mode: 1; c-basic-offset: 8; -*- */
 /*
- * Copyright (c) 1993, 1994, 1995, 1996, 1997
- *	The Regents of the University of California.  All rights reserved.
+ * 版权所有 (c) 1993, 1994, 1995, 1996, 1997
+ * 加利福尼亚大学校董会。保留所有权利。
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
- *	This product includes software developed by the Computer Systems
- *	Engineering Group at Lawrence Berkeley Laboratory.
- * 4. Neither the name of the University nor of the Laboratory may be used
- *    to endorse or promote products derived from this software without
- *    specific prior written permission.
+ * 在满足以下条件的情况下，允许以源代码和二进制形式重新分发和使用：
+ * 1. 源代码的再分发必须保留上述版权声明、本条件列表和以下免责声明。
+ * 2. 以二进制形式重新分发必须在文档和/或提供的其他材料中复制上述版权声明、本条件列表和以下免责声明。
+ * 3. 所有提及此软件功能或使用的广告材料必须显示以下声明：
+ *    本产品包括由劳伦斯伯克利实验室计算机系统工程小组开发的软件。
+ * 4. 未经特定事先书面许可，不得使用大学或实验室的名称来认可或推广从本软件派生的产品。
  *
- * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
+ * 本软件由版权所有者和贡献者 "按原样" 提供，任何明示或暗示的担保，
+ * 包括但不限于对适销性和特定用途的适用性的暗示担保，
+ * 都是被拒绝的。在任何情况下，版权所有者或贡献者均不对任何直接、间接、偶然、特殊、惩罚性或后果性损害（包括但不限于替代商品或服务的采购、使用、数据或利润损失或业务中断）承担任何责任，无论是合同责任、严格责任还是侵权行为（包括疏忽或其他）的理论，即使事先已被告知可能发生此类损害的可能性。
+ *
  */
 
 /*
- * Remote packet capture mechanisms and extensions from WinPcap:
+ * WinPcap 的远程数据包捕获机制和扩展：
  *
- * Copyright (c) 2002 - 2003
- * NetGroup, Politecnico di Torino (Italy)
- * All rights reserved.
+ * 版权所有 (c) 2002 - 2003
+ * Torino 高级技术学院 NetGroup (意大利)
+ * 保留所有权利。
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
+ * 在满足以下条件的情况下，允许以源代码和二进制形式重新分发和使用：
  *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- * 3. Neither the name of the Politecnico di Torino nor the names of its
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
+ * 1. 源代码的再分发必须保留上述版权声明、本条件列表和以下免责声明。
+ * 2. 以二进制形式重新分发必须在文档和/或提供的其他材料中复制上述版权声明、本条件列表和以下免责声明。
+ * 3. 不得使用 Torino 高级技术学院或其贡献者的名称来认可或推广从本软件派生的产品，除非事先获得特定的书面许可。
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * 本软件由版权所有者和贡献者 "按原样" 提供，任何明示或暗示的担保，
+ * 包括但不限于对适销性和特定用途的适用性的暗示担保，
+ * 都是被拒绝的。在任何情况下，版权所有者或贡献者均不对任何直接、间接、偶然、特殊、惩罚性或后果性损害（包括但不限于替代商品或服务的采购、使用、数据或利润损失或业务中断）承担任何责任，无论是合同责任、严格责任还是侵权行为（包括疏忽或其他）的理论，即使事先已被告知可能发生此类损害的可能性。
  *
  */
 
@@ -70,479 +39,398 @@
 #define lib_pcap_pcap_h
 
 /*
- * Some software that uses libpcap/WinPcap/Npcap defines _MSC_VER before
- * including pcap.h if it's not defined - and it defines it to 1500.
- * (I'm looking at *you*, lwIP!)
- *
- * Attempt to detect this, and undefine _MSC_VER so that we can *reliably*
- * use it to know what compiler is being used and, if it's Visual Studio,
- * what version is being used.
+ * 用于 pcap API 的错误代码。
+ * 这些代码都是负数，因此您可以通过检查是否为负值来检查返回这些代码的调用的成功或失败。
  */
-#if defined(_MSC_VER)
-  /*
-   * We assume here that software such as that doesn't define _MSC_FULL_VER
-   * as well and that it defines _MSC_VER with a value > 1200.
-   *
-   * DO NOT BREAK THESE ASSUMPTIONS.  IF YOU FEEL YOU MUST DEFINE _MSC_VER
-   * WITH A COMPILER THAT'S NOT MICROSOFT'S C COMPILER, PLEASE CONTACT
-   * US SO THAT WE CAN MAKE IT SO THAT YOU DON'T HAVE TO DO THAT.  THANK
-   * YOU.
-   *
-   * OK, is _MSC_FULL_VER defined?
-   */
-  #if !defined(_MSC_FULL_VER)
-    /*
-     * According to
-     *
-     *    https://sourceforge.net/p/predef/wiki/Compilers/
-     *
-     * with "Visual C++ 6.0 Processor Pack"/Visual C++ 6.0 SP6 and
-     * later, _MSC_FULL_VER is defined, so either this is an older
-     * version of Visual C++ or it's not Visual C++ at all.
-     *
-     * For Visual C++ 6.0, _MSC_VER is defined as 1200.
-     */
-    #if _MSC_VER > 1200
-      /*
-       * If this is Visual C++, _MSC_FULL_VER should be defined, so we
-       * assume this isn't Visual C++, and undo the lie that it is.
-       */
-      #undef _MSC_VER
-    #endif
-  #endif
-#endif
-
-#include <pcap/funcattrs.h>
-
-#include <pcap/pcap-inttypes.h>
-
-#if defined(_WIN32)
-  #include <winsock2.h>		/* u_int, u_char etc. */
-  #include <io.h>		/* _get_osfhandle() */
-#elif defined(MSDOS)
-  #include <sys/types.h>	/* u_int, u_char etc. */
-  #include <sys/socket.h>
-#else /* UN*X */
-  #include <sys/types.h>	/* u_int, u_char etc. */
-  #include <sys/time.h>
-#endif /* _WIN32/MSDOS/UN*X */
-
-#include <pcap/socket.h>	/* for SOCKET, as the active-mode rpcap APIs use it */
-
-#ifndef PCAP_DONT_INCLUDE_PCAP_BPF_H
-#include <pcap/bpf.h>
-#endif
-
-#include <stdio.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#define PCAP_ERROR			-1	/* 通用错误代码 */
+#define PCAP_ERROR_BREAK		-2	/* 循环被 pcap_breakloop 终止 */
+#define PCAP_ERROR_NOT_ACTIVATED	-3	/* 捕获需要激活 */
+#define PCAP_ERROR_ACTIVATED		-4	/* 操作无法在已激活的捕获上执行 */
+#define PCAP_ERROR_NO_SUCH_DEVICE	-5	/* 不存在此设备 */
+#define PCAP_ERROR_RFMON_NOTSUP		-6	/* 此设备不支持 rfmon（监控）模式 */
+#define PCAP_ERROR_NOT_RFMON		-7	/* 仅在监控模式下支持的操作 */
+#define PCAP_ERROR_PERM_DENIED		-8	/* 没有权限打开设备 */
+#define PCAP_ERROR_IFACE_NOT_UP		-9	/* 接口未启用 */
+#define PCAP_ERROR_CANTSET_TSTAMP_TYPE	-10	/* 此设备不支持设置时间戳类型 */
+#define PCAP_ERROR_PROMISC_PERM_DENIED	-11	/* 您没有以混杂模式捕获的权限 */
+#define PCAP_ERROR_TSTAMP_PRECISION_NOTSUP -12  /* 请求的时间戳精度不受支持 */
 
 /*
- * Version number of the current version of the pcap file format.
- *
- * NOTE: this is *NOT* the version number of the libpcap library.
- * To fetch the version information for the version of libpcap
- * you're using, use pcap_lib_version().
+ * pcap API 的警告代码。
+ * 这些代码都是正数且非零，因此它们看起来不像错误。
  */
-#define PCAP_VERSION_MAJOR 2
-#define PCAP_VERSION_MINOR 4
-
-#define PCAP_ERRBUF_SIZE 256
+#define PCAP_WARNING			1	/* 通用警告代码 */
+#define PCAP_WARNING_PROMISC_NOTSUP	2	/* 此设备不支持混杂模式 */
+#define PCAP_WARNING_TSTAMP_TYPE_NOTSUP	3	/* 不支持请求的时间戳类型 */
 
 /*
- * Compatibility for systems that have a bpf.h that
- * predates the bpf typedefs for 64-bit support.
+ * 初始化选项。
+ * 未在此处列出的所有位均保留用于扩展。
+ *
+ * 在类 UNIX 系统上，默认假定本地字符编码为 UTF-8，因此不进行字符编码转换。
+ *
+ * 在 Windows 上，默认的本地字符编码是本地 ANSI 代码页。
  */
-#if BPF_RELEASE - 0 < 199406
-typedef	int bpf_int32;
-typedef	u_int bpf_u_int32;
-#endif
-
-typedef struct pcap pcap_t;
-typedef struct pcap_dumper pcap_dumper_t;
-typedef struct pcap_if pcap_if_t;
-typedef struct pcap_addr pcap_addr_t;
-
-/*
- * The first record in the file contains saved values for some
- * of the flags used in the printout phases of tcpdump.
- * Many fields here are 32 bit ints so compilers won't insert unwanted
- * padding; these files need to be interchangeable across architectures.
- * Documentation: https://www.tcpdump.org/manpages/pcap-savefile.5.txt.
- *
- * Do not change the layout of this structure, in any way (this includes
- * changes that only affect the length of fields in this structure).
- *
- * Also, do not change the interpretation of any of the members of this
- * structure, in any way (this includes using values other than
- * LINKTYPE_ values, as defined in "savefile.c", in the "linktype"
- * field).
- *
- * Instead:
- *
- *	introduce a new structure for the new format, if the layout
- *	of the structure changed;
- *
- *	send mail to "tcpdump-workers@lists.tcpdump.org", requesting
- *	a new magic number for your new capture file format, and, when
- *	you get the new magic number, put it in "savefile.c";
- *
- *	use that magic number for save files with the changed file
- *	header;
- *
- *	make the code in "savefile.c" capable of reading files with
- *	the old file header as well as files with the new file header
- *	(using the magic number to determine the header format).
- *
- * Then supply the changes by forking the branch at
- *
- *	https://github.com/the-tcpdump-group/libpcap/tree/master
- *
- * and issuing a pull request, so that future versions of libpcap and
- * programs that use it (such as tcpdump) will be able to read your new
- * capture file format.
- */
-struct pcap_file_header {
-	bpf_u_int32 magic;
-	u_short version_major;
-	u_short version_minor;
-	bpf_int32 thiszone;	/* gmt to local correction; this is always 0 */
-	bpf_u_int32 sigfigs;	/* accuracy of timestamps; this is always 0 */
-	bpf_u_int32 snaplen;	/* max length saved portion of each pkt */
-	bpf_u_int32 linktype;	/* data link type (LINKTYPE_*) */
-};
-
-/*
- * Macros for the value returned by pcap_datalink_ext().
- *
- * If LT_FCS_LENGTH_PRESENT(x) is true, the LT_FCS_LENGTH(x) macro
- * gives the FCS length of packets in the capture.
- */
-#define LT_FCS_LENGTH_PRESENT(x)	((x) & 0x04000000)
-#define LT_FCS_LENGTH(x)		(((x) & 0xF0000000) >> 28)
-#define LT_FCS_DATALINK_EXT(x)		((((x) & 0xF) << 28) | 0x04000000)
-
-typedef enum {
-       PCAP_D_INOUT = 0,
-       PCAP_D_IN,
-       PCAP_D_OUT
-} pcap_direction_t;
-
-/*
- * Generic per-packet information, as supplied by libpcap.
- *
- * The time stamp can and should be a "struct timeval", regardless of
- * whether your system supports 32-bit tv_sec in "struct timeval",
- * 64-bit tv_sec in "struct timeval", or both if it supports both 32-bit
- * and 64-bit applications.  The on-disk format of savefiles uses 32-bit
- * tv_sec (and tv_usec); this structure is irrelevant to that.  32-bit
- * and 64-bit versions of libpcap, even if they're on the same platform,
- * should supply the appropriate version of "struct timeval", even if
- * that's not what the underlying packet capture mechanism supplies.
- */
-struct pcap_pkthdr {
-	struct timeval ts;	/* time stamp */
-	bpf_u_int32 caplen;	/* length of portion present */
-	bpf_u_int32 len;	/* length of this packet (off wire) */
-};
-
-/*
- * As returned by the pcap_stats()
- */
-struct pcap_stat {
-	u_int ps_recv;		/* number of packets received */
-	u_int ps_drop;		/* number of packets dropped */
-	u_int ps_ifdrop;	/* drops by interface -- only supported on some platforms */
-#ifdef _WIN32
-	u_int ps_capt;		/* number of packets that reach the application */
-	u_int ps_sent;		/* number of packets sent by the server on the network */
-	u_int ps_netdrop;	/* number of packets lost on the network */
-#endif /* _WIN32 */
-};
-
-#ifdef MSDOS
-/*
- * As returned by the pcap_stats_ex()
- */
-struct pcap_stat_ex {
-       u_long  rx_packets;        /* total packets received       */
-       u_long  tx_packets;        /* total packets transmitted    */
-       u_long  rx_bytes;          /* total bytes received         */
-       u_long  tx_bytes;          /* total bytes transmitted      */
-       u_long  rx_errors;         /* bad packets received         */
-       u_long  tx_errors;         /* packet transmit problems     */
-       u_long  rx_dropped;        /* no space in Rx buffers       */
-       u_long  tx_dropped;        /* no space available for Tx    */
-       u_long  multicast;         /* multicast packets received   */
-       u_long  collisions;
-
-       /* detailed rx_errors: */
-       u_long  rx_length_errors;
-       u_long  rx_over_errors;    /* receiver ring buff overflow  */
-       u_long  rx_crc_errors;     /* recv'd pkt with crc error    */
-       u_long  rx_frame_errors;   /* recv'd frame alignment error */
-       u_long  rx_fifo_errors;    /* recv'r fifo overrun          */
-       u_long  rx_missed_errors;  /* recv'r missed packet         */
-
-       /* detailed tx_errors */
-       u_long  tx_aborted_errors;
-       u_long  tx_carrier_errors;
-       u_long  tx_fifo_errors;
-       u_long  tx_heartbeat_errors;
-       u_long  tx_window_errors;
-     };
-#endif
-
-/*
- * Item in a list of interfaces.
- */
-struct pcap_if {
-	struct pcap_if *next;
-	char *name;		/* name to hand to "pcap_open_live()" */
-	char *description;	/* textual description of interface, or NULL */
-	struct pcap_addr *addresses;
-	bpf_u_int32 flags;	/* PCAP_IF_ interface flags */
-};
-
-#define PCAP_IF_LOOPBACK				0x00000001	/* interface is loopback */
-#define PCAP_IF_UP					0x00000002	/* interface is up */
-#define PCAP_IF_RUNNING					0x00000004	/* interface is running */
-#define PCAP_IF_WIRELESS				0x00000008	/* interface is wireless (*NOT* necessarily Wi-Fi!) */
-#define PCAP_IF_CONNECTION_STATUS			0x00000030	/* connection status: */
-#define PCAP_IF_CONNECTION_STATUS_UNKNOWN		0x00000000	/* unknown */
-#define PCAP_IF_CONNECTION_STATUS_CONNECTED		0x00000010	/* connected */
-#define PCAP_IF_CONNECTION_STATUS_DISCONNECTED		0x00000020	/* disconnected */
-#define PCAP_IF_CONNECTION_STATUS_NOT_APPLICABLE	0x00000030	/* not applicable */
-
-/*
- * Representation of an interface address.
- */
-struct pcap_addr {
-	struct pcap_addr *next;
-	struct sockaddr *addr;		/* address */
-	struct sockaddr *netmask;	/* netmask for that address */
-	struct sockaddr *broadaddr;	/* broadcast address for that address */
-	struct sockaddr *dstaddr;	/* P2P destination address for that address */
-};
-
-typedef void (*pcap_handler)(u_char *, const struct pcap_pkthdr *,
-			     const u_char *);
-
-/*
- * Error codes for the pcap API.
- * These will all be negative, so you can check for the success or
- * failure of a call that returns these codes by checking for a
- * negative value.
- */
-#define PCAP_ERROR			-1	/* generic error code */
-#define PCAP_ERROR_BREAK		-2	/* loop terminated by pcap_breakloop */
-#define PCAP_ERROR_NOT_ACTIVATED	-3	/* the capture needs to be activated */
-#define PCAP_ERROR_ACTIVATED		-4	/* the operation can't be performed on already activated captures */
-#define PCAP_ERROR_NO_SUCH_DEVICE	-5	/* no such device exists */
-#define PCAP_ERROR_RFMON_NOTSUP		-6	/* this device doesn't support rfmon (monitor) mode */
-#define PCAP_ERROR_NOT_RFMON		-7	/* operation supported only in monitor mode */
-#define PCAP_ERROR_PERM_DENIED		-8	/* no permission to open the device */
-#define PCAP_ERROR_IFACE_NOT_UP		-9	/* interface isn't up */
-#define PCAP_ERROR_CANTSET_TSTAMP_TYPE	-10	/* this device doesn't support setting the time stamp type */
-#define PCAP_ERROR_PROMISC_PERM_DENIED	-11	/* you don't have permission to capture in promiscuous mode */
-#define PCAP_ERROR_TSTAMP_PRECISION_NOTSUP -12  /* the requested time stamp precision is not supported */
-
-/*
- * Warning codes for the pcap API.
- * These will all be positive and non-zero, so they won't look like
- * errors.
- */
-#define PCAP_WARNING			1	/* generic warning code */
-#define PCAP_WARNING_PROMISC_NOTSUP	2	/* this device doesn't support promiscuous mode */
-#define PCAP_WARNING_TSTAMP_TYPE_NOTSUP	3	/* the requested time stamp type is not supported */
-
-/*
- * Value to pass to pcap_compile() as the netmask if you don't know what
- * the netmask is.
- */
-#define PCAP_NETMASK_UNKNOWN	0xffffffff
-
-/*
- * Initialize pcap.  If this isn't called, pcap is initialized to
- * a mode source-compatible and binary-compatible with older versions
- * that lack this routine.
- */
-
-/*
- * Initialization options.
- * All bits not listed here are reserved for expansion.
- *
- * On UNIX-like systems, the local character encoding is assumed to be
- * UTF-8, so no character encoding transformations are done.
- *
- * On Windows, the local character encoding is the local ANSI code page.
- */
-#define PCAP_CHAR_ENC_LOCAL	0x00000000U	/* strings are in the local character encoding */
-#define PCAP_CHAR_ENC_UTF_8	0x00000001U	/* strings are in UTF-8 */
+#define PCAP_CHAR_ENC_LOCAL	0x00000000U	/* 字符串使用本地字符编码 */
+#define PCAP_CHAR_ENC_UTF_8	0x00000001U	/* 字符串使用 UTF-8 编码 */
 
 PCAP_AVAILABLE_1_10
 PCAP_API int	pcap_init(unsigned int, char *);
 
 /*
- * We're deprecating pcap_lookupdev() for various reasons (not
- * thread-safe, can behave weirdly with WinPcap).  Callers
- * should use pcap_findalldevs() and use the first device.
+ * 我们正在废弃 pcap_lookupdev()，原因有多个（不是线程安全，在 WinPcap 中可能表现奇怪）。
+ * 调用者应使用 pcap_findalldevs() 并使用第一个设备。
  */
 PCAP_AVAILABLE_0_4
 PCAP_DEPRECATED("use 'pcap_findalldevs' and use the first device")
 PCAP_API char	*pcap_lookupdev(char *);
 
-PCAP_AVAILABLE_0_4
-PCAP_API int	pcap_lookupnet(const char *, bpf_u_int32 *, bpf_u_int32 *, char *);
+/**
+ * @brief 查找网络设备的IP地址和子网掩码
+ *
+ * @param dev       网络设备名称
+ * @param netp      存储网络地址的指针
+ * @param maskp     存储子网掩码的指针
+ * @param errbuf    存储错误信息的缓冲区
+ *
+ * @return 成功返回0，失败返回-1并设置错误信息到errbuf
+ */
+PCAP_API int pcap_lookupnet(const char *dev, bpf_u_int32 *netp, bpf_u_int32 *maskp, char *errbuf);
 
-PCAP_AVAILABLE_1_0
-PCAP_API pcap_t	*pcap_create(const char *, char *);
+/**
+ * @brief 创建一个用于捕获数据包的会话
+ *
+ * @param dev       网络设备名称
+ * @param errbuf    存储错误信息的缓冲区
+ *
+ * @return 成功返回指向pcap_t结构体的指针，失败返回NULL并设置错误信息到errbuf
+ */
+PCAP_API pcap_t *pcap_create(const char *dev, char *errbuf);
 
-PCAP_AVAILABLE_1_0
-PCAP_API int	pcap_set_snaplen(pcap_t *, int);
+/**
+ * @brief 设置捕获数据包时的最大长度
+ *
+ * @param p         pcap_t结构体的指针
+ * @param snaplen   最大长度
+ *
+ * @return 成功返回0，失败返回-1
+ */
+PCAP_API int pcap_set_snaplen(pcap_t *p, int snaplen);
 
-PCAP_AVAILABLE_1_0
-PCAP_API int	pcap_set_promisc(pcap_t *, int);
+/**
+ * @brief 设置是否开启混杂模式
+ *
+ * @param p         pcap_t结构体的指针
+ * @param promisc   是否开启混杂模式，非零表示开启，零表示关闭
+ *
+ * @return 成功返回0，失败返回-1
+ */
+PCAP_API int pcap_set_promisc(pcap_t *p, int promisc);
 
-PCAP_AVAILABLE_1_0
-PCAP_API int	pcap_can_set_rfmon(pcap_t *);
+/**
+ * @brief 检查是否可以设置RFMON模式
+ *
+ * @param p         pcap_t结构体的指针
+ *
+ * @return 可以设置返回非零值，否则返回零
+ */
+PCAP_API int pcap_can_set_rfmon(pcap_t *p);
 
-PCAP_AVAILABLE_1_0
-PCAP_API int	pcap_set_rfmon(pcap_t *, int);
+/**
+ * @brief 设置是否开启RFMON模式
+ *
+ * @param p         pcap_t结构体的指针
+ * @param rfmon     是否开启RFMON模式，非零表示开启，零表示关闭
+ *
+ * @return 成功返回0，失败返回-1
+ */
+PCAP_API int pcap_set_rfmon(pcap_t *p, int rfmon);
 
-PCAP_AVAILABLE_1_0
-PCAP_API int	pcap_set_timeout(pcap_t *, int);
+/**
+ * @brief 设置超时时间
+ *
+ * @param p         pcap_t结构体的指针
+ * @param timeout   超时时间（毫秒）
+ *
+ * @return 成功返回0，失败返回-1
+ */
+PCAP_API int pcap_set_timeout(pcap_t *p, int timeout);
 
-PCAP_AVAILABLE_1_2
-PCAP_API int	pcap_set_tstamp_type(pcap_t *, int);
+/**
+ * @brief 设置时间戳类型
+ *
+ * @param p         pcap_t结构体的指针
+ * @param type      时间戳类型
+ *
+ * @return 成功返回0，失败返回-1
+ */
+PCAP_API int pcap_set_tstamp_type(pcap_t *p, int type);
 
-PCAP_AVAILABLE_1_5
-PCAP_API int	pcap_set_immediate_mode(pcap_t *, int);
+/**
+ * @brief 设置是否开启立即模式
+ *
+ * @param p         pcap_t结构体的指针
+ * @param immediate 是否开启立即模式，非零表示开启，零表示关闭
+ *
+ * @return 成功返回0，失败返回-1
+ */
+PCAP_API int pcap_set_immediate_mode(pcap_t *p, int immediate);
 
-PCAP_AVAILABLE_1_0
-PCAP_API int	pcap_set_buffer_size(pcap_t *, int);
+/**
+ * @brief 设置缓冲区大小
+ *
+ * @param p         pcap_t结构体的指针
+ * @param size      缓冲区大小（字节）
+ *
+ * @return 成功返回0，失败返回-1
+ */
+PCAP_API int pcap_set_buffer_size(pcap_t *p, int size);
 
-PCAP_AVAILABLE_1_5
-PCAP_API int	pcap_set_tstamp_precision(pcap_t *, int);
+/**
+ * @brief 设置时间戳精度
+ *
+ * @param p         pcap_t结构体的指针
+ * @param precision 时间戳精度
+ *
+ * @return 成功返回0，失败返回-1
+ */
+PCAP_API int pcap_set_tstamp_precision(pcap_t *p, int precision);
 
-PCAP_AVAILABLE_1_5
-PCAP_API int	pcap_get_tstamp_precision(pcap_t *);
+/**
+ * @brief 获取时间戳精度
+ *
+ * @param p         pcap_t结构体的指针
+ *
+ * @return 返回时间戳精度
+ */
+PCAP_API int pcap_get_tstamp_precision(pcap_t *p);
 
-PCAP_AVAILABLE_1_0
-PCAP_API int	pcap_activate(pcap_t *);
+/**
+ * @brief 激活会话
+ *
+ * @param p         pcap_t结构体的指针
+ *
+ * @return 成功返回0，失败返回-1
+ */
+PCAP_API int pcap_activate(pcap_t *p);
 
-PCAP_AVAILABLE_1_2
-PCAP_API int	pcap_list_tstamp_types(pcap_t *, int **);
+/**
+ * @brief 获取支持的时间戳类型列表
+ *
+ * @param p         pcap_t结构体的指针
+ * @param tstamp_types 存储时间戳类型列表的指针
+ *
+ * @return 成功返回0，失败返回-1
+ */
+PCAP_API int pcap_list_tstamp_types(pcap_t *p, int **tstamp_types);
 
-PCAP_AVAILABLE_1_2
-PCAP_API void	pcap_free_tstamp_types(int *);
+/**
+ * @brief 释放时间戳类型列表
+ *
+ * @param tstamp_types 时间戳类型列表
+ */
+PCAP_API void pcap_free_tstamp_types(int *tstamp_types);
 
-PCAP_AVAILABLE_1_2
-PCAP_API int	pcap_tstamp_type_name_to_val(const char *);
+/**
+ * @brief 将时间戳类型名称转换为对应的值
+ *
+ * @param name      时间戳类型名称
+ *
+ * @return 返回时间戳类型的值，如果无效返回-1
+ */
+PCAP_API int pcap_tstamp_type_name_to_val(const char *name);
 
-PCAP_AVAILABLE_1_2
-PCAP_API const char *pcap_tstamp_type_val_to_name(int);
+/**
+ * @brief 将时间戳类型的值转换为对应的名称
+ *
+ * @param type      时间戳类型的值
+ *
+ * @return 返回时间戳类型的名称，如果无效返回NULL
+ */
+PCAP_API const char *pcap_tstamp_type_val_to_name(int type);
 
-PCAP_AVAILABLE_1_2
-PCAP_API const char *pcap_tstamp_type_val_to_description(int);
+/**
+ * @brief 将时间戳类型的值转换为对应的描述
+ *
+ * @param type      时间戳类型的值
+ *
+ * @return 返回时间戳类型的描述，如果无效返回NULL
+ */
+PCAP_API const char *pcap_tstamp_type_val_to_description(int type);
 
 #ifdef __linux__
-PCAP_AVAILABLE_1_9
-PCAP_API int	pcap_set_protocol_linux(pcap_t *, int);
+/**
+ * @brief 设置Linux特定的协议
+ *
+ * @param p         pcap_t结构体的指针
+ * @param protocol  协议类型
+ *
+ * @return 成功返回0，失败返回-1
+ */
+PCAP_API int pcap_set_protocol_linux(pcap_t *p, int protocol);
 #endif
 
-/*
- * Time stamp types.
- * Not all systems and interfaces will necessarily support all of these.
- *
- * A system that supports PCAP_TSTAMP_HOST is offering time stamps
- * provided by the host machine, rather than by the capture device,
- * but not committing to any characteristics of the time stamp.
- *
- * PCAP_TSTAMP_HOST_LOWPREC is a time stamp, provided by the host machine,
- * that's low-precision but relatively cheap to fetch; it's normally done
- * using the system clock, so it's normally synchronized with times you'd
- * fetch from system calls.
- *
- * PCAP_TSTAMP_HOST_HIPREC is a time stamp, provided by the host machine,
- * that's high-precision; it might be more expensive to fetch.  It is
- * synchronized with the system clock.
- *
- * PCAP_TSTAMP_HOST_HIPREC_UNSYNCED is a time stamp, provided by the host
- * machine, that's high-precision; it might be more expensive to fetch.
- * It is not synchronized with the system clock, and might have
- * problems with time stamps for packets received on different CPUs,
- * depending on the platform.  It might be more likely to be strictly
- * monotonic than PCAP_TSTAMP_HOST_HIPREC.
- *
- * PCAP_TSTAMP_ADAPTER is a high-precision time stamp supplied by the
- * capture device; it's synchronized with the system clock.
- *
- * PCAP_TSTAMP_ADAPTER_UNSYNCED is a high-precision time stamp supplied by
- * the capture device; it's not synchronized with the system clock.
- *
- * Note that time stamps synchronized with the system clock can go
- * backwards, as the system clock can go backwards.  If a clock is
- * not in sync with the system clock, that could be because the
- * system clock isn't keeping accurate time, because the other
- * clock isn't keeping accurate time, or both.
- *
- * Note that host-provided time stamps generally correspond to the
- * time when the time-stamping code sees the packet; this could
- * be some unknown amount of time after the first or last bit of
- * the packet is received by the network adapter, due to batching
- * of interrupts for packet arrival, queueing delays, etc..
- */
-#define PCAP_TSTAMP_HOST			0	/* host-provided, unknown characteristics */
-#define PCAP_TSTAMP_HOST_LOWPREC		1	/* host-provided, low precision, synced with the system clock */
-#define PCAP_TSTAMP_HOST_HIPREC			2	/* host-provided, high precision, synced with the system clock */
-#define PCAP_TSTAMP_ADAPTER			3	/* device-provided, synced with the system clock */
-#define PCAP_TSTAMP_ADAPTER_UNSYNCED		4	/* device-provided, not synced with the system clock */
-#define PCAP_TSTAMP_HOST_HIPREC_UNSYNCED	5	/* host-provided, high precision, not synced with the system clock */
 
 /*
- * Time stamp resolution types.
- * Not all systems and interfaces will necessarily support all of these
- * resolutions when doing live captures; all of them can be requested
- * when reading a savefile.
+ * 时间戳类型。
+ * 并非所有系统和接口都一定支持这些类型。
+ *
+ * 支持 PCAP_TSTAMP_HOST 的系统提供的时间戳是由主机机器提供的，
+ * 而不是由捕获设备提供的，但不承诺时间戳的任何特性。
+ *
+ * PCAP_TSTAMP_HOST_LOWPREC 是由主机机器提供的时间戳，
+ * 具有低精度但相对便宜；通常使用系统时钟完成，
+ * 因此通常与从系统调用中获取的时间同步。
+ *
+ * PCAP_TSTAMP_HOST_HIPREC 是由主机机器提供的高精度时间戳；
+ * 获取它可能更昂贵。它与系统时钟同步。
+ *
+ * PCAP_TSTAMP_HOST_HIPREC_UNSYNCED 是由主机机器提供的高精度时间戳；
+ * 获取它可能更昂贵。它与系统时钟不同步，并且可能存在与在不同 CPU 上接收的数据包的时间戳有关的问题，这取决于平台。它可能比 PCAP_TSTAMP_HOST_HIPREC 更可能是严格单调的。
+ *
+ * PCAP_TSTAMP_ADAPTER 是由捕获设备提供的高精度时间戳；
+ * 它与系统时钟同步。
+ *
+ * PCAP_TSTAMP_ADAPTER_UNSYNCED 是由捕获设备提供的高精度时间戳；
+ * 它与系统时钟不同步。
+ *
+ * 请注意，与系统时钟同步的时间戳可能会后退，因为系统时钟可能会后退。
+ * 如果时钟与系统时钟不同步，可能是因为系统时钟不保持准确时间、其他时钟不保持准确时间或两者都不保持准确时间。
+ *
+ * 请注意，主机提供的时间戳通常对应于时间戳代码看到数据包的时间；
+ * 这可能是数据包的第一个或最后一个比特位接收到网络适配器后的未知时间量，这是由于数据包到达的中断批处理、排队延迟等。
  */
-#define PCAP_TSTAMP_PRECISION_MICRO	0	/* use timestamps with microsecond precision, default */
-#define PCAP_TSTAMP_PRECISION_NANO	1	/* use timestamps with nanosecond precision */
+#define PCAP_TSTAMP_HOST			0	/* 主机提供的，未知特性 */
+#define PCAP_TSTAMP_HOST_LOWPREC		1	/* 主机提供的，低精度，与系统时钟同步 */
+#define PCAP_TSTAMP_HOST_HIPREC			2	/* 主机提供的，高精度，与系统时钟同步 */
+#define PCAP_TSTAMP_ADAPTER			3	/* 设备提供的，与系统时钟同步 */
+#define PCAP_TSTAMP_ADAPTER_UNSYNCED		4	/* 设备提供的，与系统时钟不同步 */
+#define PCAP_TSTAMP_HOST_HIPREC_UNSYNCED	5	/* 主机提供的，高精度，与系统时钟不同步 */
 
-PCAP_AVAILABLE_0_4
-PCAP_API pcap_t	*pcap_open_live(const char *, int, int, int, char *);
+/*
+ * 时间戳分辨率类型。
+ * 并非在进行实时捕获时所有系统和接口都一定支持所有这些分辨率；在读取保存文件时可以请求所有这些分辨率。
+ */
+#define PCAP_TSTAMP_PRECISION_MICRO	0	/* 使用微秒精度的时间戳，默认值 */
+#define PCAP_TSTAMP_PRECISION_NANO	1	/* 使用纳秒精度的时间戳 */
 
-PCAP_AVAILABLE_0_6
-PCAP_API pcap_t	*pcap_open_dead(int, int);
+/**
+ * @file pcap.h
+ * @brief PCAP library functions
+ */
 
-PCAP_AVAILABLE_1_5
-PCAP_API pcap_t	*pcap_open_dead_with_tstamp_precision(int, int, u_int);
+#ifndef PCAP_H
+#define PCAP_H
 
-PCAP_AVAILABLE_1_5
-PCAP_API pcap_t	*pcap_open_offline_with_tstamp_precision(const char *, u_int, char *);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-PCAP_AVAILABLE_0_4
-PCAP_API pcap_t	*pcap_open_offline(const char *, char *);
+/**
+ * @brief 打开一个用于实时抓包的网络设备。
+ *
+ * 该函数打开一个用于实时抓包的网络设备，并返回一个指向 pcap_t 结构的指针。
+ * 网络设备由其名称指定。
+ *
+ * @param device 要从中抓取的网络设备的名称。
+ * @param snaplen 设置抓包句柄的快照长度。
+ * @param promisc 一个指示是否将接口置于混杂模式的标志。
+ * @param to_ms 读取超时值（以毫秒为单位）。
+ * @param errbuf 如果函数失败，用于保存错误消息的缓冲区。
+ * @return 成功时返回 pcap_t 结构的指针，失败时返回 NULL。
+ */
+PCAP_API pcap_t *pcap_open_live(const char *device, int snaplen, int promisc, int to_ms, char *errbuf);
+
+/**
+ * @brief 打开一个用于离线抓包的虚拟网络设备。
+ *
+ * 该函数打开一个用于离线抓包的虚拟网络设备，并返回一个指向 pcap_t 结构的指针。
+ * 参数指定了虚拟设备的属性。
+ *
+ * @param linktype 虚拟设备的链路类型。
+ * @param snaplen 设置抓包句柄的快照长度。
+ * @return 成功时返回 pcap_t 结构的指针，失败时返回 NULL。
+ */
+PCAP_API pcap_t *pcap_open_dead(int linktype, int snaplen);
+
+/**
+ * @brief 打开一个用于离线抓包的虚拟网络设备，并指定时间戳精度。
+ *
+ * 该函数打开一个用于离线抓包的虚拟网络设备，并返回一个指向 pcap_t 结构的指针。
+ * 参数指定了虚拟设备的属性和时间戳精度。
+ *
+ * @param linktype 虚拟设备的链路类型。
+ * @param snaplen 设置抓包句柄的快照长度。
+ * @param precision 时间戳的精度。
+ * @return 成功时返回 pcap_t 结构的指针，失败时返回 NULL。
+ */
+PCAP_API pcap_t *pcap_open_dead_with_tstamp_precision(int linktype, int snaplen, u_int precision);
+
+/**
+ * @brief 打开一个带有时间戳精度的离线抓包文件。
+ *
+ * 该函数打开一个带有时间戳精度的离线抓包文件，并返回一个指向 pcap_t 结构的指针。
+ * 参数指定了抓包文件的路径、时间戳精度和错误消息缓冲区。
+ *
+ * @param path 抓包文件的路径。
+ * @param precision 时间戳的精度。
+ * @param errbuf 如果函数失败，用于保存错误消息的缓冲区。
+ * @return 成功时返回 pcap_t 结构的指针，失败时返回 NULL。
+ */
+PCAP_API pcap_t *pcap_open_offline_with_tstamp_precision(const char *path, u_int precision, char *errbuf);
+
+/**
+ * @brief 打开一个离线抓包文件。
+ *
+ * 该函数打开一个离线抓包文件，并返回一个指向 pcap_t 结构的指针。
+ * 参数指定了抓包文件的路径和错误消息缓冲区。
+ *
+ * @param path 抓包文件的路径。
+ * @param errbuf 如果函数失败，用于保存错误消息的缓冲区。
+ * @return 成功时返回 pcap_t 结构的指针，失败时返回 NULL。
+ */
+PCAP_API pcap_t *pcap_open_offline(const char *path, char *errbuf);
 
 #ifdef _WIN32
-  PCAP_AVAILABLE_1_5
-  PCAP_API pcap_t  *pcap_hopen_offline_with_tstamp_precision(intptr_t, u_int, char *);
+/**
+ * @brief 使用时间戳精度打开一个带有句柄的离线抓包文件。
+ *
+ * 该函数使用时间戳精度打开一个带有句柄的离线抓包文件，并返回一个指向 pcap_t 结构的指针。
+ * 参数指定了句柄、时间戳精度和错误消息缓冲区。
+ *
+ * @param handle 句柄。
+ * @param precision 时间戳的精度。
+ * @param errbuf 如果函数失败，用于保存错误消息的缓冲区。
+ * @return 成功时返回 pcap_t 结构的指针，失败时返回 NULL。
+ */
+PCAP_API pcap_t *pcap_hopen_offline_with_tstamp_precision(intptr_t handle, u_int precision, char *errbuf);
 
-  PCAP_API pcap_t  *pcap_hopen_offline(intptr_t, char *);
+/**
+ * @brief 使用句柄打开一个离线抓包文件。
+ *
+ * 该函数使用句柄打开一个离线抓包文件，并返回一个指向 pcap_t 结构的指针。
+ * 参数指定了句柄和错误消息缓冲区。
+ *
+ * @param handle 句柄。
+ * @param errbuf 如果函数失败，用于保存错误消息的缓冲区。
+ * @return 成功时返回 pcap_t 结构的指针，失败时返回 NULL。
+ */
+PCAP_API pcap_t *pcap_hopen_offline(intptr_t handle, char *errbuf);
+#endif
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* PCAP_H */
+
   /*
-   * If we're building libpcap, these are internal routines in savefile.c,
-   * so we must not define them as macros.
+   * 如果正在构建 libpcap，则这些是 savefile.c 中的内部例程，
+   * 因此不能将它们定义为宏。
    *
-   * If we're not building libpcap, given that the version of the C runtime
-   * with which libpcap was built might be different from the version
-   * of the C runtime with which an application using libpcap was built,
-   * and that a FILE structure may differ between the two versions of the
-   * C runtime, calls to _fileno() must use the version of _fileno() in
-   * the C runtime used to open the FILE *, not the version in the C
-   * runtime with which libpcap was built.  (Maybe once the Universal CRT
-   * rules the world, this will cease to be a problem.)
+   * 如果未构建 libpcap，则鉴于使用 libpcap 构建的 C 运行时版本可能与使用 libpcap 的应用程序构建的 C 运行时版本不同，
+   * 并且 FILE 结构可能因两个 C 运行时版本而异，调用 _fileno() 必须使用用于打开 FILE * 的 C 运行时版本中的版本，而不是用于构建 libpcap 的 C 运行时版本中的版本。
+   * （也许一旦通用 CRT 统治世界，这将不再是一个问题。）
    */
   #ifndef BUILDING_PCAP
     #define pcap_fopen_offline_with_tstamp_precision(f,p,b) \
@@ -558,130 +446,376 @@ PCAP_API pcap_t	*pcap_open_offline(const char *, char *);
   PCAP_API pcap_t	*pcap_fopen_offline(FILE *, char *);
 #endif /*_WIN32*/
 
-PCAP_AVAILABLE_0_4
-PCAP_API void	pcap_close(pcap_t *);
+/**
+ * @file pcap.h
+ * @brief PCAP library functions
+ */
 
+/**
+ * @brief 关闭pcap句柄，并释放相关资源
+ * 
+ * @param p pcap句柄的指针
+ */
 PCAP_AVAILABLE_0_4
-PCAP_API int	pcap_loop(pcap_t *, int, pcap_handler, u_char *);
+PCAP_API void pcap_close(pcap_t *p);
 
+/**
+ * @brief 进入循环以捕获数据包并调用回调函数进行处理
+ * 
+ * @param p pcap句柄的指针
+ * @param cnt 最大捕获数据包的数量，-1表示无限制
+ * @param callback 指向回调函数的指针
+ * @param user 指向用户数据的指针，将传递给回调函数
+ * @return 当循环终止时返回-1，否则返回0
+ */
 PCAP_AVAILABLE_0_4
-PCAP_API int	pcap_dispatch(pcap_t *, int, pcap_handler, u_char *);
+PCAP_API int pcap_loop(pcap_t *p, int cnt, pcap_handler callback, u_char *user);
 
+/**
+ * @brief 捕获数据包并调用回调函数进行处理，不进入循环
+ * 
+ * @param p pcap句柄的指针
+ * @param cnt 最大捕获数据包的数量，-1表示无限制
+ * @param callback 指向回调函数的指针
+ * @param user 指向用户数据的指针，将传递给回调函数
+ * @return 成功捕获并处理数据包的数量
+ */
 PCAP_AVAILABLE_0_4
-PCAP_API const u_char *pcap_next(pcap_t *, struct pcap_pkthdr *);
+PCAP_API int pcap_dispatch(pcap_t *p, int cnt, pcap_handler callback, u_char *user);
 
+/**
+ * @brief 获取pcap句柄的下一个数据包
+ * 
+ * @param p pcap句柄的指针
+ * @param header 指向pcap_pkthdr结构的指针，用于存储数据包头部信息
+ * @return 指向数据包的指针
+ */
+PCAP_AVAILABLE_0_4
+PCAP_API const u_char *pcap_next(pcap_t *p, struct pcap_pkthdr *header);
+
+/**
+ * @brief 获取pcap句柄的下一个数据包，扩展版本
+ * 
+ * @param p pcap句柄的指针
+ * @param header 指向指向pcap_pkthdr结构的指针的指针，用于存储数据包头部信息
+ * @param packet 指向指向数据包的指针的指针，用于存储数据包
+ * @return 返回值表示捕获到的数据包的类型
+ *     - 正数：成功捕获到数据包，返回值表示数据包的长度
+ *     - 0：超时，未捕获到数据包
+ *     - 负数：出错，返回值表示错误代码
+ */
 PCAP_AVAILABLE_0_8
-PCAP_API int	pcap_next_ex(pcap_t *, struct pcap_pkthdr **, const u_char **);
+PCAP_API int pcap_next_ex(pcap_t *p, struct pcap_pkthdr **header, const u_char **packet);
 
+/**
+ * @brief 终止pcap循环捕获
+ * 
+ * 调用此函数将导致pcap_loop或pcap_dispatch函数立即返回。
+ * 
+ * @param p pcap句柄的指针
+ */
 PCAP_AVAILABLE_0_8
-PCAP_API void	pcap_breakloop(pcap_t *);
+PCAP_API void pcap_breakloop(pcap_t *p);
 
+/**
+ * @brief 获取pcap统计信息
+ * 
+ * @param p pcap句柄的指针
+ * @param stats 指向pcap_stat结构的指针，用于存储统计信息
+ * @return 成功获取统计信息时返回0，否则返回-1
+ */
 PCAP_AVAILABLE_0_4
-PCAP_API int	pcap_stats(pcap_t *, struct pcap_stat *);
+PCAP_API int pcap_stats(pcap_t *p, struct pcap_stat *stats);
 
+/**
+ * @brief 设置pcap过滤器
+ * 
+ * @param p pcap句柄的指针
+ * @param fp 指向bpf_program结构的指针，表示过滤器程序
+ * @return 成功设置过滤器时返回0，否则返回-1
+ */
 PCAP_AVAILABLE_0_4
-PCAP_API int	pcap_setfilter(pcap_t *, struct bpf_program *);
+PCAP_API int pcap_setfilter(pcap_t *p, struct bpf_program *fp);
 
+/**
+ * @brief 设置pcap捕获方向
+ * 
+ * @param p pcap句柄的指针
+ * @param d 方向，可以是PCAP_D_IN、PCAP_D_OUT或PCAP_D_INOUT
+ * @return 成功设置捕获方向时返回0，否则返回-1
+ */
 PCAP_AVAILABLE_0_9
-PCAP_API int	pcap_setdirection(pcap_t *, pcap_direction_t);
+PCAP_API int pcap_setdirection(pcap_t *p, pcap_direction_t d);
 
+/**
+ * @brief 获取pcap句柄的非阻塞模式状态
+ * 
+ * @param p pcap句柄的指针
+ * @param errbuf 存储错误消息的缓冲区
+ * @return 成功获取非阻塞模式状态时返回0，否则返回-1
+ */
 PCAP_AVAILABLE_0_7
-PCAP_API int	pcap_getnonblock(pcap_t *, char *);
+PCAP_API int pcap_getnonblock(pcap_t *p, char *errbuf);
 
+/**
+ * @brief 设置pcap句柄的非阻塞模式状态
+ * 
+ * @param p pcap句柄的指针
+ * @param nonblock 非阻塞模式标志，非0表示开启非阻塞模式，0表示关闭非阻塞模式
+ * @param errbuf 存储错误消息的缓冲区
+ * @return 成功设置非阻塞模式状态时返回0，否则返回-1
+ */
 PCAP_AVAILABLE_0_7
-PCAP_API int	pcap_setnonblock(pcap_t *, int, char *);
+PCAP_API int pcap_setnonblock(pcap_t *p, int nonblock, char *errbuf);
 
+/**
+ * @brief 向pcap句柄注入数据包
+ * 
+ * @param p pcap句柄的指针
+ * @param buf 指向要注入的数据包的指针
+ * @param size 数据包的长度
+ * @return 成功注入数据包时返回0，否则返回-1
+ */
 PCAP_AVAILABLE_0_9
-PCAP_API int	pcap_inject(pcap_t *, const void *, size_t);
+PCAP_API int pcap_inject(pcap_t *p, const void *buf, size_t size);
 
+/**
+ * @brief 发送数据包到网络
+ * 
+ * @param p pcap句柄的指针
+ * @param buf 指向要发送的数据包的指针
+ * @param size 数据包的长度
+ * @return 成功发送数据包时返回0，否则返回-1
+ */
 PCAP_AVAILABLE_0_8
-PCAP_API int	pcap_sendpacket(pcap_t *, const u_char *, int);
+PCAP_API int pcap_sendpacket(pcap_t *p, const u_char *buf, int size);
 
+/**
+ * @brief 将pcap错误代码转换为字符串
+ * 
+ * @param errnum pcap错误代码
+ * @return 表示错误代码的字符串
+ */
 PCAP_AVAILABLE_1_0
-PCAP_API const char *pcap_statustostr(int);
+PCAP_API const char *pcap_statustostr(int errnum);
 
+/**
+ * @brief 将错误代码转换为字符串
+ * 
+ * @param errnum 错误代码
+ * @return 表示错误代码的字符串
+ */
 PCAP_AVAILABLE_0_4
-PCAP_API const char *pcap_strerror(int);
+PCAP_API const char *pcap_strerror(int errnum);
 
+/**
+ * @brief 获取pcap错误消息
+ * 
+ * @param p pcap句柄的指针
+ * @return 表示错误消息的字符串
+ */
 PCAP_AVAILABLE_0_4
-PCAP_API char	*pcap_geterr(pcap_t *);
+PCAP_API char *pcap_geterr(pcap_t *p);
 
+/**
+ * @brief 打印pcap错误消息
+ * 
+ * @param p pcap句柄的指针
+ * @param prefix 错误消息前缀
+ */
 PCAP_AVAILABLE_0_4
-PCAP_API void	pcap_perror(pcap_t *, const char *);
+PCAP_API void pcap_perror(pcap_t *p, const char *prefix);
 
+/**
+ * @brief 编译BPF过滤器程序
+ * 
+ * @param p pcap句柄的指针
+ * @param fp 指向bpf_program结构的指针，用于存储编译后的过滤器程序
+ * @param str 过滤器表达式字符串
+ * @param optimize 是否优化过滤器程序
+ * @param netmask 网络掩码
+ * @return 成功编译过滤器程序时返回0，否则返回-1
+ */
 PCAP_AVAILABLE_0_4
-PCAP_API int	pcap_compile(pcap_t *, struct bpf_program *, const char *, int,
-	    bpf_u_int32);
+PCAP_API int pcap_compile(pcap_t *p, struct bpf_program *fp, const char *str, int optimize, bpf_u_int32 netmask);
 
+/**
+ * @brief 编译BPF过滤器程序，不依赖pcap库
+ * 
+ * @param snaplen 最大捕获数据包的长度
+ * @param linktype 数据链路类型
+ * @param
+  * @param fp 指向bpf_program结构的指针，用于存储编译后的过滤器程序
+ * @param str 过滤器表达式字符串
+ * @param optimize 是否优化过滤器程序
+ * @param netmask 网络掩码
+ * @return 成功编译过滤器程序时返回0，否则返回-1
+ */
 PCAP_AVAILABLE_0_5
 PCAP_DEPRECATED("use pcap_open_dead(), pcap_compile() and pcap_close()")
-PCAP_API int	pcap_compile_nopcap(int, int, struct bpf_program *,
-	    const char *, int, bpf_u_int32);
+PCAP_API int pcap_compile_nopcap(int snaplen, int linktype, struct bpf_program *fp, const char *str, int optimize, bpf_u_int32 netmask);
 
-/* XXX - this took two arguments in 0.4 and 0.5 */
+/**
+ * @brief 释放BPF过滤器程序占用的内存
+ * 
+ * @param fp 指向bpf_program结构的指针
+ */
 PCAP_AVAILABLE_0_6
-PCAP_API void	pcap_freecode(struct bpf_program *);
+PCAP_API void pcap_freecode(struct bpf_program *fp);
 
+/**
+ * @brief 在离线模式下对数据包应用BPF过滤器
+ * 
+ * @param fp 指向bpf_program结构的指针，表示过滤器程序
+ * @param header 指向pcap_pkthdr结构的指针，表示数据包头部信息
+ * @param packet 指向数据包的指针
+ * @return 数据包通过过滤器时返回非0值，否则返回0
+ */
 PCAP_AVAILABLE_1_0
-PCAP_API int	pcap_offline_filter(const struct bpf_program *,
-	    const struct pcap_pkthdr *, const u_char *);
+PCAP_API int pcap_offline_filter(const struct bpf_program *fp, const struct pcap_pkthdr *header, const u_char *packet);
 
+/**
+ * @brief 获取pcap句柄的数据链路类型
+ * 
+ * @param p pcap句柄的指针
+ * @return 数据链路类型
+ */
 PCAP_AVAILABLE_0_4
-PCAP_API int	pcap_datalink(pcap_t *);
+PCAP_API int pcap_datalink(pcap_t *p);
 
+/**
+ * @brief 获取pcap句柄的扩展数据链路类型
+ * 
+ * @param p pcap句柄的指针
+ * @return 扩展数据链路类型
+ */
 PCAP_AVAILABLE_1_0
-PCAP_API int	pcap_datalink_ext(pcap_t *);
+PCAP_API int pcap_datalink_ext(pcap_t *p);
 
+/**
+ * @brief 获取pcap句柄支持的所有数据链路类型
+ * 
+ * @param p pcap句柄的指针
+ * @param dltlist 指向int数组的指针，用于存储数据链路类型列表
+ * @return 成功获取数据链路类型列表时返回0，否则返回-1
+ */
 PCAP_AVAILABLE_0_8
-PCAP_API int	pcap_list_datalinks(pcap_t *, int **);
+PCAP_API int pcap_list_datalinks(pcap_t *p, int **dltlist);
 
+/**
+ * @brief 设置pcap句柄的数据链路类型
+ * 
+ * @param p pcap句柄的指针
+ * @param dlt 数据链路类型
+ * @return 成功设置数据链路类型时返回0，否则返回-1
+ */
 PCAP_AVAILABLE_0_8
-PCAP_API int	pcap_set_datalink(pcap_t *, int);
+PCAP_API int pcap_set_datalink(pcap_t *p, int dlt);
 
+/**
+ * @brief 释放由pcap_list_datalinks函数分配的内存
+ * 
+ * @param dltlist 数据链路类型列表的指针
+ */
 PCAP_AVAILABLE_0_8
-PCAP_API void	pcap_free_datalinks(int *);
+PCAP_API void pcap_free_datalinks(int *dltlist);
 
+/**
+ * @brief 将数据链路类型名称转换为对应的数值
+ * 
+ * @param name 数据链路类型名称
+ * @return 数据链路类型数值
+ */
 PCAP_AVAILABLE_0_8
-PCAP_API int	pcap_datalink_name_to_val(const char *);
+PCAP_API int pcap_datalink_name_to_val(const char *name);
 
+/**
+ * @brief 将数据链路类型数值转换为对应的名称
+ * 
+ * @param dlt 数据链路类型数值
+ * @return 数据链路类型名称
+ */
 PCAP_AVAILABLE_0_8
-PCAP_API const char *pcap_datalink_val_to_name(int);
+PCAP_API const char *pcap_datalink_val_to_name(int dlt);
 
+/**
+ * @brief 将数据链路类型数值转换为对应的描述
+ * 
+ * @param dlt 数据链路类型数值
+ * @return 数据链路类型描述
+ */
 PCAP_AVAILABLE_0_8
-PCAP_API const char *pcap_datalink_val_to_description(int);
+PCAP_API const char *pcap_datalink_val_to_description(int dlt);
 
+/**
+ * @brief 将数据链路类型数值转换为对应的描述或DLT值
+ * 
+ * @param dlt 数据链路类型数值
+ * @return 数据链路类型描述或DLT值
+ */
 PCAP_AVAILABLE_1_10
-PCAP_API const char *pcap_datalink_val_to_description_or_dlt(int);
+PCAP_API const char *pcap_datalink_val_to_description_or_dlt(int dlt);
 
+/**
+ * @brief 获取pcap句柄的快照长度
+ * 
+ * @param p pcap句柄的指针
+ * @return 快照长度
+ */
 PCAP_AVAILABLE_0_4
-PCAP_API int	pcap_snapshot(pcap_t *);
+PCAP_API int pcap_snapshot(pcap_t *p);
 
+/**
+ * @brief 检查pcap句柄是否使用了字节顺序转换
+ * 
+ * @param p pcap句柄的指针
+ * @return 如果pcap句柄使用了字节顺序转换，则返回非0值，否则返回0
+ */
 PCAP_AVAILABLE_0_4
-PCAP_API int	pcap_is_swapped(pcap_t *);
+PCAP_API int pcap_is_swapped(pcap_t *p);
 
+/**
+ * @brief 获取pcap句柄的主版本号
+ * 
+ * @param p pcap句柄的指针
+ * @return 主版本号
+ */
 PCAP_AVAILABLE_0_4
-PCAP_API int	pcap_major_version(pcap_t *);
+PCAP_API int pcap_major_version(pcap_t *p);
 
+/**
+ * @brief 获取pcap句柄的次版本号
+ * 
+ * @param p pcap句柄的指针
+ * @return 次版本号
+ */
 PCAP_AVAILABLE_0_4
-PCAP_API int	pcap_minor_version(pcap_t *);
+PCAP_API int pcap_minor_version(pcap_t *p);
 
+/**
+ * @brief 获取pcap句柄的缓冲区大小
+ * 
+ * @param p pcap句柄的指针
+ * @return 缓冲区大小
+ */
 PCAP_AVAILABLE_1_9
-PCAP_API int	pcap_bufsize(pcap_t *);
+PCAP_API int pcap_bufsize(pcap_t *p);
 
-/* XXX */
+/**
+ * @brief 获取pcap句柄关联的文件
+ * 
+ * @param p pcap句柄的指针
+ * @return 关联的文件指针
+ */
 PCAP_AVAILABLE_0_4
-PCAP_API FILE	*pcap_file(pcap_t *);
+PCAP_API FILE *pcap_file(pcap_t *p);
 
 #ifdef _WIN32
 /*
- * This probably shouldn't have been kept in WinPcap; most if not all
- * UN*X code that used it won't work on Windows.  We deprecate it; if
- * anybody really needs access to whatever HANDLE may be associated
- * with a pcap_t (there's no guarantee that there is one), we can add
- * a Windows-only pcap_handle() API that returns the HANDLE.
+ * 这可能不应该保留在 WinPcap 中；大多数如果不是全部的 UN*X 代码在 Windows 上不会工作。我们弃用它；如果有人真的需要访问与 pcap_t 关联的任何 HANDLE（不能保证有一个），我们可以添加一个仅适用于 Windows 的 pcap_handle() API，返回 HANDLE。
  */
 PCAP_AVAILABLE_0_4
-PCAP_DEPRECATED("request a 'pcap_handle' that returns a HANDLE if you need it")
+PCAP_DEPRECATED("如果需要，请求一个返回 HANDLE 的 'pcap_handle'")
 PCAP_API int	pcap_fileno(pcap_t *);
 #else /* _WIN32 */
 PCAP_AVAILABLE_0_4
@@ -695,98 +829,158 @@ PCAP_API int	pcap_fileno(pcap_t *);
 PCAP_AVAILABLE_0_4
 PCAP_API pcap_dumper_t *pcap_dump_open(pcap_t *, const char *);
 
-#ifdef _WIN32
-  PCAP_AVAILABLE_0_9
-  PCAP_API pcap_dumper_t *pcap_dump_hopen(pcap_t *, intptr_t);
+/**
+ * @file pcap_dump.h
+ * @brief PCAP dump file handling functions
+ */
 
-  /*
-   * If we're building libpcap, this is an internal routine in sf-pcap.c, so
-   * we must not define it as a macro.
-   *
-   * If we're not building libpcap, given that the version of the C runtime
-   * with which libpcap was built might be different from the version
-   * of the C runtime with which an application using libpcap was built,
-   * and that a FILE structure may differ between the two versions of the
-   * C runtime, calls to _fileno() must use the version of _fileno() in
-   * the C runtime used to open the FILE *, not the version in the C
-   * runtime with which libpcap was built.  (Maybe once the Universal CRT
-   * rules the world, this will cease to be a problem.)
-   */
-  #ifndef BUILDING_PCAP
-    #define pcap_dump_fopen(p,f) \
-	pcap_dump_hopen(p, _get_osfhandle(_fileno(f)))
-  #endif
+#ifdef _WIN32
+/**
+ * @brief 打开一个用于写入的pcap dump文件，使用文件流
+ * 
+ * @param p pcap句柄的指针
+ * @param f 要写入的文件流
+ * @return 指向pcap dumper结构的指针
+ */
+PCAP_AVAILABLE_0_9
+PCAP_API pcap_dumper_t *pcap_dump_hopen(pcap_t *p, intptr_t f);
+
+#ifndef BUILDING_PCAP
+/**
+ * @brief 打开一个用于写入的pcap dump文件，使用文件指针
+ * 
+ * 此宏用于使用文件指针打开一个用于写入的pcap dump文件。
+ * 
+ * @param p pcap句柄的指针
+ * @param f 要写入的文件指针
+ * @return 指向pcap dumper结构的指针
+ */
+#define pcap_dump_fopen(p, f) \
+    pcap_dump_hopen(p, _get_osfhandle(_fileno(f)))
+#endif
 #else /*_WIN32*/
-  PCAP_AVAILABLE_0_9
-  PCAP_API pcap_dumper_t *pcap_dump_fopen(pcap_t *, FILE *fp);
+/**
+ * @brief 打开一个用于写入的pcap dump文件，使用FILE流
+ * 
+ * @param p pcap句柄的指针
+ * @param fp 要写入的FILE流
+ * @return 指向pcap dumper结构的指针
+ */
+PCAP_AVAILABLE_0_9
+PCAP_API pcap_dumper_t *pcap_dump_fopen(pcap_t *p, FILE *fp);
 #endif /*_WIN32*/
 
+/**
+ * @brief 打开一个用于追加写入的pcap dump文件
+ * 
+ * @param p pcap句柄的指针
+ * @param filename 要追加写入的文件名
+ * @return 指向pcap dumper结构的指针
+ */
 PCAP_AVAILABLE_1_7
-PCAP_API pcap_dumper_t *pcap_dump_open_append(pcap_t *, const char *);
+PCAP_API pcap_dumper_t *pcap_dump_open_append(pcap_t *p, const char *filename);
 
+/**
+ * @brief 获取与pcap dumper关联的FILE流
+ * 
+ * @param dumper pcap dumper结构的指针
+ * @return 与pcap dumper关联的FILE流
+ */
 PCAP_AVAILABLE_0_8
-PCAP_API FILE	*pcap_dump_file(pcap_dumper_t *);
+PCAP_API FILE *pcap_dump_file(pcap_dumper_t *dumper);
 
+/**
+ * @brief 获取pcap dump文件中的当前文件位置
+ * 
+ * @param dumper pcap dumper结构的指针
+ * @return pcap dump文件中的当前文件位置
+ */
 PCAP_AVAILABLE_0_9
-PCAP_API long	pcap_dump_ftell(pcap_dumper_t *);
+PCAP_API long pcap_dump_ftell(pcap_dumper_t *dumper);
 
+/**
+ * @brief 获取pcap dump文件中的当前文件位置（64位）
+ * 
+ * @param dumper pcap dumper结构的指针
+ * @return pcap dump文件中的当前文件位置（64位）
+ */
 PCAP_AVAILABLE_1_9
-PCAP_API int64_t	pcap_dump_ftell64(pcap_dumper_t *);
+PCAP_API int64_t pcap_dump_ftell64(pcap_dumper_t *dumper);
 
+/**
+ * @brief 刷新pcap dumper的缓冲区，将数据写入文件
+ * 
+ * @param dumper pcap dumper结构的指针
+ * @return 成功刷新缓冲区时返回0，否则返回-1
+ */
 PCAP_AVAILABLE_0_8
-PCAP_API int	pcap_dump_flush(pcap_dumper_t *);
+PCAP_API int pcap_dump_flush(pcap_dumper_t *dumper);
 
+/**
+ * @brief 关闭pcap dumper，并释放相关资源
+ * 
+ * @param dumper pcap dumper结构的指针
+ */
 PCAP_AVAILABLE_0_4
-PCAP_API void	pcap_dump_close(pcap_dumper_t *);
+PCAP_API void pcap_dump_close(pcap_dumper_t *dumper);
 
+/**
+ * @brief 将捕获到的数据包写入pcap dump文件
+ * 
+ * @param dumper pcap dumper结构的指针
+ * @param header 指向捕获到的数据包头部的指针
+ * @param packet 指向捕获到的数据包的指针
+ */
 PCAP_AVAILABLE_0_4
-PCAP_API void	pcap_dump(u_char *, const struct pcap_pkthdr *, const u_char *);
+PCAP_API void pcap_dump(u_char *dumper, const struct pcap_pkthdr *header, const u_char *packet);
 
+/**
+ * @brief 查找所有可用的网络设备
+ * 
+ * @param alldevs 用于存储网络设备列表的指针
+ * @param errbuf 存储错误消息的缓冲区
+ * @return 成功查找到网络设备时返回0，否则返回-1
+ */
 PCAP_AVAILABLE_0_7
-PCAP_API int	pcap_findalldevs(pcap_if_t **, char *);
+PCAP_API int pcap_findalldevs(pcap_if_t **alldevs, char *errbuf);
 
+/**
+ * @brief 释放由pcap_findalldevs函数分配的内存
+ * 
+ * @param alldevs 网络设备列表的指针
+ */
 PCAP_AVAILABLE_0_7
-PCAP_API void	pcap_freealldevs(pcap_if_t *);
+PCAP_API void pcap_freealldevs(pcap_if_t *alldevs);
 
-/*
- * We return a pointer to the version string, rather than exporting the
- * version string directly.
- *
- * On at least some UNIXes, if you import data from a shared library into
- * a program, the data is bound into the program binary, so if the string
- * in the version of the library with which the program was linked isn't
- * the same as the string in the version of the library with which the
- * program is being run, various undesirable things may happen (warnings,
- * the string being the one from the version of the library with which the
- * program was linked, or even weirder things, such as the string being the
- * one from the library but being truncated).
- *
- * On Windows, the string is constructed at run time.
+/**
+ * @brief 获取当前libpcap库的版本字符串
+ * 
+ * @return 当前libpcap库的版本字符串
  */
 PCAP_AVAILABLE_0_8
 PCAP_API const char *pcap_lib_version(void);
 
+
 #if defined(_WIN32)
 
   /*
-   * Win32 definitions
+   * Win32 定义
    */
 
   /*!
-    \brief A queue of raw packets that will be sent to the network with pcap_sendqueue_transmit().
+    \brief 一个将发送到网络的原始数据包队列，将使用 pcap_sendqueue_transmit() 发送。
   */
   struct pcap_send_queue
   {
-	u_int maxlen;	/* Maximum size of the queue, in bytes. This
-			   variable contains the size of the buffer field. */
-	u_int len;	/* Current size of the queue, in bytes. */
-	char *buffer;	/* Buffer containing the packets to be sent. */
+	u_int maxlen;	/* 队列的最大大小，以字节为单位。此变量包含缓冲区字段的大小。 */
+	u_int len;	/* 队列的当前大小，以字节为单位。 */
+	char *buffer;	/* 包含要发送的数据包的缓冲区。 */
   };
 
   typedef struct pcap_send_queue pcap_send_queue;
 
   /*!
-    \brief This typedef is a support for the pcap_get_airpcap_handle() function
+    \brief 此 typedef 是 pcap_get_airpcap_handle() 函数的支持
   */
   #if !defined(AIRPCAP_HANDLE__EAE405F5_0171_9592_B3C2_C19EC426AD34__DEFINED_)
     #define AIRPCAP_HANDLE__EAE405F5_0171_9592_B3C2_C19EC426AD34__DEFINED_
@@ -799,29 +993,112 @@ PCAP_API const char *pcap_lib_version(void);
 
   PCAP_API HANDLE pcap_getevent(pcap_t *p);
 
-  PCAP_AVAILABLE_1_8
-  PCAP_API int pcap_oid_get_request(pcap_t *, bpf_u_int32, void *, size_t *);
+/**
+ * @brief 获取指定OID的请求
+ * 
+ * @param p 捕获会话句柄
+ * @param oid OID值
+ * @param data 存放请求数据的缓冲区
+ * @param len 缓冲区长度
+ * @return 返回0表示成功，-1表示失败
+ */
+PCAP_AVAILABLE_1_8
+PCAP_API int pcap_oid_get_request(pcap_t *p, bpf_u_int32 oid, void *data, size_t *len);
 
-  PCAP_AVAILABLE_1_8
-  PCAP_API int pcap_oid_set_request(pcap_t *, bpf_u_int32, const void *, size_t *);
+/**
+ * @brief 设置指定OID的请求
+ * 
+ * @param p 捕获会话句柄
+ * @param oid OID值
+ * @param data 存放请求数据的缓冲区
+ * @param len 缓冲区长度
+ * @return 返回0表示成功，-1表示失败
+ */
+PCAP_AVAILABLE_1_8
+PCAP_API int pcap_oid_set_request(pcap_t *p, bpf_u_int32 oid, const void *data, size_t len);
 
-  PCAP_API pcap_send_queue* pcap_sendqueue_alloc(u_int memsize);
+/**
+ * @brief 分配一个发送队列
+ * 
+ * @param memsize 队列的最大大小（以字节为单位）
+ * @return 返回指向发送队列的指针，如果失败则返回NULL
+ */
+PCAP_API pcap_send_queue* pcap_sendqueue_alloc(u_int memsize);
 
-  PCAP_API void pcap_sendqueue_destroy(pcap_send_queue* queue);
+/**
+ * @brief 销毁发送队列
+ * 
+ * @param queue 指向发送队列的指针
+ */
+PCAP_API void pcap_sendqueue_destroy(pcap_send_queue* queue);
 
-  PCAP_API int pcap_sendqueue_queue(pcap_send_queue* queue, const struct pcap_pkthdr *pkt_header, const u_char *pkt_data);
+/**
+ * @brief 将数据包放入发送队列
+ * 
+ * @param queue 指向发送队列的指针
+ * @param pkt_header 数据包的头部信息
+ * @param pkt_data 数据包的内容
+ * @return 返回0表示成功，-1表示失败
+ */
+PCAP_API int pcap_sendqueue_queue(pcap_send_queue* queue, const struct pcap_pkthdr *pkt_header, const u_char *pkt_data);
 
-  PCAP_API u_int pcap_sendqueue_transmit(pcap_t *p, pcap_send_queue* queue, int sync);
+/**
+ * @brief 传输发送队列中的数据包
+ * 
+ * @param p 捕获会话句柄
+ * @param queue 指向发送队列的指针
+ * @param sync 如果为1，则进行同步传输，否则进行异步传输
+ * @return 返回实际传输的数据包数
+ */
+PCAP_API u_int pcap_sendqueue_transmit(pcap_t *p, pcap_send_queue* queue, int sync);
 
-  PCAP_API struct pcap_stat *pcap_stats_ex(pcap_t *p, int *pcap_stat_size);
+/**
+ * @brief 获取扩展的捕获统计信息
+ * 
+ * @param p 捕获会话句柄
+ * @param pcap_stat_size 指向整数的指针，用于存储捕获统计信息的长度
+ * @return 返回指向捕获统计信息的指针，如果失败则返回NULL
+ */
+PCAP_API struct pcap_stat *pcap_stats_ex(pcap_t *p, int *pcap_stat_size);
 
-  PCAP_API int pcap_setuserbuffer(pcap_t *p, int size);
+/**
+ * @brief 设置用户缓冲区大小
+ * 
+ * @param p 捕获会话句柄
+ * @param size 缓冲区大小
+ * @return 返回0表示成功，-1表示失败
+ */
+PCAP_API int pcap_setuserbuffer(pcap_t *p, int size);
 
-  PCAP_API int pcap_live_dump(pcap_t *p, char *filename, int maxsize, int maxpacks);
+/**
+ * @brief 实时捕获并将数据包保存到文件
+ * 
+ * @param p 捕获会话句柄
+ * @param filename 要保存到的文件名
+ * @param maxsize 最大文件大小（以字节为单位）
+ * @param maxpacks 最大数据包数
+ * @return 返回0表示成功，-1表示失败
+ */
+PCAP_API int pcap_live_dump(pcap_t *p, char *filename, int maxsize, int maxpacks);
 
-  PCAP_API int pcap_live_dump_ended(pcap_t *p, int sync);
+/**
+ * @brief 结束实时捕获并保存数据包到文件
+ * 
+ * @param p 捕获会话句柄
+ * @param sync 如果为1，则进行同步结束，否则进行异步结束
+ * @return 返回0表示成功，-1表示失败
+ */
+PCAP_API int pcap_live_dump_ended(pcap_t *p, int sync);
 
-  PCAP_API int pcap_start_oem(char* err_str, int flags);
+/**
+ * @brief 启动 OEM 模式
+ * 
+ * @param err_str 错误信息字符串
+ * @param flags 标志
+ * @return 返回0表示成功，-1表示失败
+ */
+PCAP_API int pcap_start_oem(char* err_str, int flags);
+
 
   PCAP_API PAirpcapHandle pcap_get_airpcap_handle(pcap_t *p);
 
@@ -832,17 +1109,39 @@ PCAP_API const char *pcap_lib_version(void);
 #elif defined(MSDOS)
 
   /*
-   * MS-DOS definitions
+   * MS-DOS 定义
    */
 
-  PCAP_API int  pcap_stats_ex (pcap_t *, struct pcap_stat_ex *);
-  PCAP_API void pcap_set_wait (pcap_t *p, void (*yield)(void), int wait);
-  PCAP_API u_long pcap_mac_packets (void);
+/**
+ * @brief 获取扩展的捕获统计信息
+ * 
+ * @param p 捕获会话句柄
+ * @param pcap_stat_ex 指向扩展捕获统计信息结构的指针
+ * @return 返回0表示成功，-1表示失败
+ */
+PCAP_API int pcap_stats_ex(pcap_t *p, struct pcap_stat_ex *pcap_stat_ex);
+
+/**
+ * @brief 设置等待函数
+ * 
+ * @param p 捕获会话句柄
+ * @param yield 指向等待函数的指针
+ * @param wait 等待标志
+ */
+PCAP_API void pcap_set_wait(pcap_t *p, void (*yield)(void), int wait);
+
+/**
+ * @brief 获取 MAC 数据包数
+ * 
+ * @return 返回 MAC 数据包数
+ */
+PCAP_API u_long pcap_mac_packets(void);
+
 
 #else /* UN*X */
 
   /*
-   * UN*X definitions
+   * UN*X 定义
    */
 
   PCAP_AVAILABLE_0_8
@@ -854,233 +1153,180 @@ PCAP_API const char *pcap_lib_version(void);
 #endif /* _WIN32/MSDOS/UN*X */
 
 /*
- * Remote capture definitions.
+ * 远程捕获定义。
  *
- * These routines are only present if libpcap has been configured to
- * include remote capture support.
+ * 仅当 libpcap 已配置为包括远程捕获支持时，这些例程才存在。
  */
 
 /*
- * The maximum buffer size in which address, port, interface names are kept.
+ * 地址、端口、接口名称的最大缓冲区大小。
  *
- * In case the adapter name or such is larger than this value, it is truncated.
- * This is not used by the user; however it must be aware that an hostname / interface
- * name longer than this value will be truncated.
+ * 如果适配器名称等大于此值，则会被截断。
+ * 用户不使用此值；然而，必须意识到主机名/接口名称超过此值将被截断。
  */
 #define PCAP_BUF_SIZE 1024
 
-/*
- * The type of input source, passed to pcap_open().
- */
-#define PCAP_SRC_FILE		2	/* local savefile */
-#define PCAP_SRC_IFLOCAL	3	/* local network interface */
-#define PCAP_SRC_IFREMOTE	4	/* interface on a remote host, using RPCAP */
 
 /*
- * The formats allowed by pcap_open() are the following:
- * - file://path_and_filename [opens a local file]
- * - rpcap://devicename [opens the selected device available on the local host, without using the RPCAP protocol]
- * - rpcap://host/devicename [opens the selected device available on a remote host]
- * - rpcap://host:port/devicename [opens the selected device available on a remote host, using a non-standard port for RPCAP]
- * - adaptername [to open a local adapter; kept for compatibility, but it is strongly discouraged]
- * - (NULL) [to open the first local adapter; kept for compatibility, but it is strongly discouraged]
+ * 传递给 pcap_open() 的输入源类型。
+ */
+#define PCAP_SRC_FILE		2	/* 本地保存文件 */
+#define PCAP_SRC_IFLOCAL	3	/* 本地网络接口 */
+#define PCAP_SRC_IFREMOTE	4	/* 远程主机上的接口，使用 RPCAP */
+
+
+/*
+ * pcap_open() 允许的格式如下：
+ * - file://path_and_filename [打开本地文件]
+ * - rpcap://devicename [打开本地主机上选择的设备，不使用 RPCAP 协议]
+ * - rpcap://host/devicename [打开远程主机上可用的设备]
+ * - rpcap://host:port/devicename [打开远程主机上可用的设备，使用非标准端口进行 RPCAP]
+ * - adaptername [打开本地适配器；为了兼容性而保留，但强烈不建议使用]
+ * - (NULL) [打开第一个本地适配器；为了兼容性而保留，但强烈不建议使用]
  *
- * The formats allowed by the pcap_findalldevs_ex() are the following:
- * - file://folder/ [lists all the files in the given folder]
- * - rpcap:// [lists all local adapters]
- * - rpcap://host:port/ [lists the devices available on a remote host]
+ * pcap_findalldevs_ex() 允许的格式如下：
+ * - file://folder/ [列出给定文件夹中的所有文件]
+ * - rpcap:// [列出所有本地适配器]
+ * - rpcap://host:port/ [列出远程主机上可用的设备]
  *
- * In all the above, "rpcaps://" can be substituted for "rpcap://" to enable
- * SSL (if it has been compiled in).
+ * 在上述所有格式中，"rpcaps://" 可以替换为 "rpcap://" 以启用 SSL（如果已编译）。
  *
- * Referring to the 'host' and 'port' parameters, they can be either numeric or literal. Since
- * IPv6 is fully supported, these are the allowed formats:
+ * 关于 'host' 和 'port' 参数，它们可以是数字或文字。由于完全支持 IPv6，以下是允许的格式：
  *
- * - host (literal): e.g. host.foo.bar
- * - host (numeric IPv4): e.g. 10.11.12.13
- * - host (numeric IPv4, IPv6 style): e.g. [10.11.12.13]
- * - host (numeric IPv6): e.g. [1:2:3::4]
- * - port: can be either numeric (e.g. '80') or literal (e.g. 'http')
+ * - host（文字）：例如 host.foo.bar
+ * - host（数字 IPv4）：例如 10.11.12.13
+ * - host（数字 IPv4，IPv6 格式）：例如 [10.11.12.13]
+ * - host（数字 IPv6）：例如 [1:2:3::4]
+ * - port：可以是数字（例如 '80'）或文字（例如 'http'）
  *
- * Here you find some allowed examples:
- * - rpcap://host.foo.bar/devicename [everything literal, no port number]
- * - rpcap://host.foo.bar:1234/devicename [everything literal, with port number]
- * - rpcap://10.11.12.13/devicename [IPv4 numeric, no port number]
- * - rpcap://10.11.12.13:1234/devicename [IPv4 numeric, with port number]
- * - rpcap://[10.11.12.13]:1234/devicename [IPv4 numeric with IPv6 format, with port number]
- * - rpcap://[1:2:3::4]/devicename [IPv6 numeric, no port number]
- * - rpcap://[1:2:3::4]:1234/devicename [IPv6 numeric, with port number]
- * - rpcap://[1:2:3::4]:http/devicename [IPv6 numeric, with literal port number]
+ * 这里是一些允许的示例：
+ * - rpcap://host.foo.bar/devicename [全部文字，无端口号]
+ * - rpcap://host.foo.bar:1234/devicename [全部文字，带端口号]
+ * - rpcap://10.11.12.13/devicename [IPv4 数字，无端口号]
+ * - rpcap://10.11.12.13:1234/devicename [IPv4 数字，带端口号]
+ * - rpcap://[10.11.12.13]:1234/devicename [IPv4 数字，IPv6 格式，带端口号]
+ * - rpcap://[1:2:3::4]/devicename [IPv6 数字，无端口号]
+ * - rpcap://[1:2:3::4]:1234/devicename [IPv6 数字，带端口号]
+ * - rpcap://[1:2:3::4]:http/devicename [IPv6 数字，带文字端口号]
  */
 
 /*
- * URL schemes for capture source.
+ * 捕获源的 URL 方案。
  */
 /*
- * This string indicates that the user wants to open a capture from a
- * local file.
+ * 此字符串表示用户想要从本地文件打开捕获。
  */
 #define PCAP_SRC_FILE_STRING "file://"
 /*
- * This string indicates that the user wants to open a capture from a
- * network interface.  This string does not necessarily involve the use
- * of the RPCAP protocol. If the interface required resides on the local
- * host, the RPCAP protocol is not involved and the local functions are used.
+ * 此字符串表示用户想要从网络接口打开捕获。此字符串不一定涉及使用 RPCAP 协议。如果所需的接口位于本地主机上，则不涉及 RPCAP 协议，而是使用本地功能。
  */
 #define PCAP_SRC_IF_STRING "rpcap://"
 
 /*
- * Flags to pass to pcap_open().
+ * 传递给 pcap_open() 的标志。
  */
 
 /*
- * Specifies whether promiscuous mode is to be used.
+ * 指定是否使用混杂模式。
  */
 #define PCAP_OPENFLAG_PROMISCUOUS		0x00000001
 
 /*
- * Specifies, for an RPCAP capture, whether the data transfer (in
- * case of a remote capture) has to be done with UDP protocol.
+ * 指定对于 RPCAP 捕获，数据传输（在远程捕获的情况下）是否必须使用 UDP 协议。
  *
- * If it is '1' if you want a UDP data connection, '0' if you want
- * a TCP data connection; control connection is always TCP-based.
- * A UDP connection is much lighter, but it does not guarantee that all
- * the captured packets arrive to the client workstation. Moreover,
- * it could be harmful in case of network congestion.
- * This flag is meaningless if the source is not a remote interface.
- * In that case, it is simply ignored.
+ * 如果值为 '1'，表示要使用 UDP 数据连接；如果值为 '0'，表示要使用 TCP 数据连接；控制连接始终基于 TCP。
+ * UDP 连接更轻量，但不能保证所有捕获的数据包都到达客户端工作站。此外，在网络拥塞的情况下可能会有问题。
+ * 如果源不是远程接口，则此标志无意义。在这种情况下，它会被简单地忽略。
  */
 #define PCAP_OPENFLAG_DATATX_UDP		0x00000002
 
 /*
- * Specifies whether the remote probe will capture its own generated
- * traffic.
+ * 指定远程探测器是否捕获自己生成的流量。
  *
- * In case the remote probe uses the same interface to capture traffic
- * and to send data back to the caller, the captured traffic includes
- * the RPCAP traffic as well.  If this flag is turned on, the RPCAP
- * traffic is excluded from the capture, so that the trace returned
- * back to the collector is does not include this traffic.
+ * 如果远程探测器使用相同的接口捕获流量并将数据发送回调用者，则捕获的流量包括 RPCAP 流量。如果打开了此标志，RPCAP 流量将从捕获中排除，因此返回给收集器的跟踪不包括此流量。
  *
- * Has no effect on local interfaces or savefiles.
+ * 对本地接口或保存文件无效。
  */
 #define PCAP_OPENFLAG_NOCAPTURE_RPCAP		0x00000004
 
 /*
- * Specifies whether the local adapter will capture its own generated traffic.
+ * 指定本地适配器是否捕获自己生成的流量。
  *
- * This flag tells the underlying capture driver to drop the packets
- * that were sent by itself.  This is useful when building applications
- * such as bridges that should ignore the traffic they just sent.
+ * 此标志告诉底层捕获驱动程序丢弃其自己发送的数据包。这在构建桥接等应用程序时很有用，这些应用程序应忽略它们刚刚发送的流量。
  *
- * Supported only on Windows.
+ * 仅在 Windows 上受支持。
  */
 #define PCAP_OPENFLAG_NOCAPTURE_LOCAL		0x00000008
 
 /*
- * This flag configures the adapter for maximum responsiveness.
+ * 此标志配置适配器以获得最大响应速度。
  *
- * In presence of a large value for nbytes, WinPcap waits for the arrival
- * of several packets before copying the data to the user. This guarantees
- * a low number of system calls, i.e. lower processor usage, i.e. better
- * performance, which is good for applications like sniffers. If the user
- * sets the PCAP_OPENFLAG_MAX_RESPONSIVENESS flag, the capture driver will
- * copy the packets as soon as the application is ready to receive them.
- * This is suggested for real time applications (such as, for example,
- * a bridge) that need the best responsiveness.
+ * 在 nbytes 的值很大的情况下，WinPcap 在将数据复制到用户之前等待几个数据包的到达。这保证了较少的系统调用，即较低的处理器使用率，即更好的性能，这对于嗅探器之类的应用程序很有用。如果用户设置了 PCAP_OPENFLAG_MAX_RESPONSIVENESS 标志，捕获驱动程序将在应用程序准备接收数据时立即复制数据包。这对实时应用程序（例如桥接）是有益的。
  *
- * The equivalent with pcap_create()/pcap_activate() is "immediate mode".
+ * 使用 pcap_create()/pcap_activate() 相当于"immediate mode"。
  */
 #define PCAP_OPENFLAG_MAX_RESPONSIVENESS	0x00000010
 
 /*
- * Remote authentication methods.
- * These are used in the 'type' member of the pcap_rmtauth structure.
+ * 远程身份验证方法。
+ * 这些用于 pcap_rmtauth 结构的 'type' 成员。
  */
 
 /*
- * NULL authentication.
+ * 空身份验证。
  *
- * The 'NULL' authentication has to be equal to 'zero', so that old
- * applications can just put every field of struct pcap_rmtauth to zero,
- * and it does work.
+ * 'NULL' 身份验证必须等于 '零'，以便旧应用程序可以将 pcap_rmtauth 结构的每个字段都设置为零，这样就有效了。
  */
 #define RPCAP_RMTAUTH_NULL 0
 /*
- * Username/password authentication.
+ * 用户名/密码身份验证。
  *
- * With this type of authentication, the RPCAP protocol will use the username/
- * password provided to authenticate the user on the remote machine. If the
- * authentication is successful (and the user has the right to open network
- * devices) the RPCAP connection will continue; otherwise it will be dropped.
+ * 使用此类型的身份验证，RPCAP 协议将使用提供的用户名/密码在远程机器上对用户进行身份验证。如果身份验证成功（并且用户有权打开网络设备），则 RPCAP 连接将继续；否则将被丢弃。
  *
- * *******NOTE********: unless TLS is being used, the username and password
- * are sent over the network to the capture server *IN CLEAR TEXT*.  Don't
- * use this, without TLS (i.e., with rpcap:// rather than rpcaps://) on
- * a network that you don't completely control!  (And be *really* careful
- * in your definition of "completely"!)
+ * *******注意********：除非使用 TLS，否则用户名和密码以明文发送到捕获服务器。在您不完全控制的网络上不要使用此功能（即在 rpcap:// 而不是 rpcaps:// 上）！（并且在您对“完全控制”的定义中要非常小心！）
  */
 #define RPCAP_RMTAUTH_PWD 1
 
 /*
- * This structure keeps the information needed to authenticate the user
- * on a remote machine.
+ * 此结构保留了在远程机器上对用户进行身份验证所需的信息。
  *
- * The remote machine can either grant or refuse the access according
- * to the information provided.
- * In case the NULL authentication is required, both 'username' and
- * 'password' can be NULL pointers.
+ * 远程机器可以根据提供的信息授予或拒绝访问。
+ * 如果需要 NULL 身份验证，'username' 和 'password' 都可以是 NULL 指针。
  *
- * This structure is meaningless if the source is not a remote interface;
- * in that case, the functions which requires such a structure can accept
- * a NULL pointer as well.
+ * 如果源不是远程接口，则此结构无意义；在这种情况下，需要此结构的函数也可以接受 NULL 指针。
  */
 struct pcap_rmtauth
 {
 	/*
-	 * \brief Type of the authentication required.
+	 * \brief 所需身份验证的类型。
 	 *
-	 * In order to provide maximum flexibility, we can support different types
-	 * of authentication based on the value of this 'type' variable. The currently
-	 * supported authentication methods are defined into the
-	 * \link remote_auth_methods Remote Authentication Methods Section\endlink.
+	 * 为了提供最大的灵活性，我们支持不同类型的身份验证，基于此 'type' 变量的值。当前支持的身份验证方法定义在
+	 * \link remote_auth_methods Remote Authentication Methods Section\endlink 中。
 	 */
 	int type;
 	/*
-	 * \brief Zero-terminated string containing the username that has to be
-	 * used on the remote machine for authentication.
+	 * \brief 包含用于在远程机器上进行身份验证的用户名的以零结尾的字符串。
 	 *
-	 * This field is meaningless in case of the RPCAP_RMTAUTH_NULL authentication
-	 * and it can be NULL.
+	 * 在 RPCAP_RMTAUTH_NULL 身份验证的情况下，此字段无意义，可以是 NULL。
 	 */
 	char *username;
 	/*
-	 * \brief Zero-terminated string containing the password that has to be
-	 * used on the remote machine for authentication.
+	 * \brief 包含用于在远程机器上进行身份验证的密码的以零结尾的字符串。
 	 *
-	 * This field is meaningless in case of the RPCAP_RMTAUTH_NULL authentication
-	 * and it can be NULL.
+	 * 在 RPCAP_RMTAUTH_NULL 身份验证的情况下，此字段无意义，可以是 NULL。
 	 */
 	char *password;
 };
 
 /*
- * This routine can open a savefile, a local device, or a device on
- * a remote machine running an RPCAP server.
+ * 这个函数可以打开保存文件、本地设备或远程运行 RPCAP 服务器的设备。
  *
- * For opening a savefile, the pcap_open_offline routines can be used,
- * and will work just as well; code using them will work on more
- * platforms than code using pcap_open() to open savefiles.
+ * 对于打开保存文件，可以使用 pcap_open_offline 系列函数，它们同样有效；使用它们的代码将在更多平台上工作，而不仅限于使用 pcap_open() 打开保存文件的代码。
  *
- * For opening a local device, pcap_open_live() can be used; it supports
- * most of the capabilities that pcap_open() supports, and code using it
- * will work on more platforms than code using pcap_open().  pcap_create()
- * and pcap_activate() can also be used; they support all capabilities
- * that pcap_open() supports, except for the Windows-only
- * PCAP_OPENFLAG_NOCAPTURE_LOCAL, and support additional capabilities.
+ * 对于打开本地设备，可以使用 pcap_open_live()；它支持大多数 pcap_open() 支持的功能，并且使用它的代码将在更多平台上工作，而不仅限于使用 pcap_open() 的代码。
+ 还可以使用 pcap_create() 和 pcap_activate()；它们支持 pcap_open() 支持的所有功能，除了仅适用于 Windows 的 PCAP_OPENFLAG_NOCAPTURE_LOCAL，并支持其他功能。
  *
- * For opening a remote capture, pcap_open() is currently the only
- * API available.
+ * 对于打开远程捕获，目前只有 pcap_open() 是可用的 API。
  */
 PCAP_AVAILABLE_1_9
 PCAP_API pcap_t	*pcap_open(const char *source, int snaplen, int flags,
@@ -1095,124 +1341,143 @@ PCAP_API int	pcap_parsesrcstr(const char *source, int *type, char *host,
 	    char *port, char *name, char *errbuf);
 
 /*
- * This routine can scan a directory for savefiles, list local capture
- * devices, or list capture devices on a remote machine running an RPCAP
- * server.
+ * 此例程可以扫描目录以获取保存文件、列出本地捕获设备，或列出运行 RPCAP 服务器的远程机器上的捕获设备。
  *
- * For scanning for savefiles, it can be used on both UN*X systems and
- * Windows systems; for each directory entry it sees, it tries to open
- * the file as a savefile using pcap_open_offline(), and only includes
- * it in the list of files if the open succeeds, so it filters out
- * files for which the user doesn't have read permission, as well as
- * files that aren't valid savefiles readable by libpcap.
+ * 用于扫描保存文件时，它可以在 UN*X 系统和 Windows 系统上使用；对于它看到的每个目录条目，它尝试使用 pcap_open_offline() 打开文件作为保存文件，并且仅在打开成功时将其包括在文件列表中，因此它会过滤掉用户没有读取权限的文件，以及不是 libpcap 可读取的有效保存文件。
  *
- * For listing local capture devices, it's just a wrapper around
- * pcap_findalldevs(); code using pcap_findalldevs() will work on more
- * platforms than code using pcap_findalldevs_ex().
+ * 用于列出本地捕获设备时，它只是 pcap_findalldevs() 的一个包装；使用 pcap_findalldevs() 的代码将在更多平台上工作，而不仅限于使用 pcap_findalldevs_ex() 的代码。
  *
- * For listing remote capture devices, pcap_findalldevs_ex() is currently
- * the only API available.
+ * 用于列出远程捕获设备时，pcap_findalldevs_ex() 目前是唯一可用的 API。
  */
 PCAP_AVAILABLE_1_9
 PCAP_API int	pcap_findalldevs_ex(const char *source,
 	    struct pcap_rmtauth *auth, pcap_if_t **alldevs, char *errbuf);
 
 /*
- * Sampling methods.
+ * 取样方法。
  *
- * These allow pcap_loop(), pcap_dispatch(), pcap_next(), and pcap_next_ex()
- * to see only a sample of packets, rather than all packets.
+ * 这些允许 pcap_loop()、pcap_dispatch()、pcap_next() 和 pcap_next_ex() 仅查看一部分数据包，而不是所有数据包。
  *
- * Currently, they work only on Windows local captures.
+ * 目前，它们仅在 Windows 本地捕获上工作。
  */
 
 /*
- * Specifies that no sampling is to be done on the current capture.
+ * 指定当前捕获不进行取样。
  *
- * In this case, no sampling algorithms are applied to the current capture.
+ * 在这种情况下，不应用任何取样算法。
  */
 #define PCAP_SAMP_NOSAMP	0
 
 /*
- * Specifies that only 1 out of N packets must be returned to the user.
+ * 指定每 N 个数据包中只返回一个数据包。
  *
- * In this case, the 'value' field of the 'pcap_samp' structure indicates the
- * number of packets (minus 1) that must be discarded before one packet got
- * accepted.
- * In other words, if 'value = 10', the first packet is returned to the
- * caller, while the following 9 are discarded.
+ * 在这种情况下，'pcap_samp' 结构的 'value' 字段表示要丢弃的数据包数（减去 1），然后才会接受一个数据包。
+ * 换句话说，如果 'value = 10'，则第一个数据包返回给调用者，接下来的 9 个数据包将被丢弃。
  */
 #define PCAP_SAMP_1_EVERY_N	1
 
 /*
- * Specifies that we have to return 1 packet every N milliseconds.
+ * 指定我们必须每 N 毫秒返回 1 个数据包。
  *
- * In this case, the 'value' field of the 'pcap_samp' structure indicates
- * the 'waiting time' in milliseconds before one packet got accepted.
- * In other words, if 'value = 10', the first packet is returned to the
- * caller; the next returned one will be the first packet that arrives
- * when 10ms have elapsed.
+ * 在这种情况下，'pcap_samp' 结构的 'value' 字段表示在毫秒中的'等待时间'，然后才会接受一个数据包。
+ * 换句话说，如果 'value = 10'，则第一个数据包返回给调用者；下一个返回的数据包将是在经过 10 毫秒后到达的第一个数据包。
  */
 #define PCAP_SAMP_FIRST_AFTER_N_MS 2
 
 /*
- * This structure defines the information related to sampling.
+ * 此结构定义了与取样相关的信息。
  *
- * In case the sampling is requested, the capturing device should read
- * only a subset of the packets coming from the source. The returned packets
- * depend on the sampling parameters.
+ * 如果请求了取样，捕获设备应该仅读取来自源的一部分数据包。返回的数据包取决于取样参数。
  *
- * WARNING: The sampling process is applied *after* the filtering process.
- * In other words, packets are filtered first, then the sampling process
- * selects a subset of the 'filtered' packets and it returns them to the
- * caller.
+ * 警告：取样过程应用于过滤过程*之后*。换句话说，首先进行数据包过滤，然后取样过程选择'过滤'数据包的子集，并将它们返回给调用者。
  */
 struct pcap_samp
 {
 	/*
-	 * Method used for sampling; see above.
+	 * 用于取样的方法；参见上文。
 	 */
 	int method;
 
 	/*
-	 * This value depends on the sampling method defined.
-	 * For its meaning, see above.
+	 * 此值取决于定义的取样方法。
+	 * 其含义请参见上文。
 	 */
 	int value;
 };
 
 /*
- * New functions.
+ * 新函数。
  */
 PCAP_AVAILABLE_1_9
 PCAP_API struct pcap_samp *pcap_setsampling(pcap_t *p);
 
 /*
- * RPCAP active mode.
+ * RPCAP 主动模式。
  */
 
-/* Maximum length of an host name (needed for the RPCAP active mode) */
+/* 主机名的最大长度（RPCAP 主动模式所需） */
 #define RPCAP_HOSTLIST_SIZE 1024
 
-PCAP_AVAILABLE_1_9
-PCAP_API SOCKET	pcap_remoteact_accept(const char *address, const char *port,
-	    const char *hostlist, char *connectinghost,
-	    struct pcap_rmtauth *auth, char *errbuf);
+/**
+ * @brief 在远程捕获模式下接受来自远程主机的连接。
+ *
+ * @param address           本地地址。
+ * @param port              本地端口。
+ * @param hostlist          允许连接的主机列表。
+ * @param connectinghost    连接的主机。
+ * @param auth              远程认证信息。
+ * @param errbuf            用于存储错误信息的缓冲区。
+ *
+ * @return 返回一个 SOCKET，表示远程捕获的连接，或者返回无效的 SOCKET。
+ */
+PCAP_API SOCKET pcap_remoteact_accept(const char *address, const char *port,
+                                      const char *hostlist, char *connectinghost,
+                                      struct pcap_rmtauth *auth, char *errbuf);
 
-PCAP_AVAILABLE_1_10
-PCAP_API SOCKET	pcap_remoteact_accept_ex(const char *address, const char *port,
-	    const char *hostlist, char *connectinghost,
-	    struct pcap_rmtauth *auth, int uses_ssl, char *errbuf);
+/**
+ * @brief 在远程捕获模式下接受来自远程主机的连接，支持 SSL。
+ *
+ * @param address           本地地址。
+ * @param port              本地端口。
+ * @param hostlist          允许连接的主机列表。
+ * @param connectinghost    连接的主机。
+ * @param auth              远程认证信息。
+ * @param uses_ssl          是否使用 SSL。
+ * @param errbuf            用于存储错误信息的缓冲区。
+ *
+ * @return 返回一个 SOCKET，表示远程捕获的连接，或者返回无效的 SOCKET。
+ */
+PCAP_API SOCKET pcap_remoteact_accept_ex(const char *address, const char *port,
+                                         const char *hostlist, char *connectinghost,
+                                         struct pcap_rmtauth *auth, int uses_ssl, char *errbuf);
 
-PCAP_AVAILABLE_1_9
-PCAP_API int	pcap_remoteact_list(char *hostlist, char sep, int size,
-	    char *errbuf);
+/**
+ * @brief 列出远程捕获主机列表。
+ *
+ * @param hostlist  存储主机列表的缓冲区。
+ * @param sep       分隔符。
+ * @param size      缓冲区大小。
+ * @param errbuf    用于存储错误信息的缓冲区。
+ *
+ * @return 成功时返回主机列表的长度，失败时返回 -1。
+ */
+PCAP_API int pcap_remoteact_list(char *hostlist, char sep, int size, char *errbuf);
 
-PCAP_AVAILABLE_1_9
-PCAP_API int	pcap_remoteact_close(const char *host, char *errbuf);
+/**
+ * @brief 关闭远程捕获连接。
+ *
+ * @param host      要关闭连接的主机名。
+ * @param errbuf    用于存储错误信息的缓冲区。
+ *
+ * @return 成功时返回 0，失败时返回 -1。
+ */
+PCAP_API int pcap_remoteact_close(const char *host, char *errbuf);
 
-PCAP_AVAILABLE_1_9
-PCAP_API void	pcap_remoteact_cleanup(void);
+/**
+ * @brief 清理远程捕获相关资源。
+ */
+PCAP_API void pcap_remoteact_cleanup(void);
+
 
 #ifdef __cplusplus
 }

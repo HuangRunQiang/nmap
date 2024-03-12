@@ -379,115 +379,124 @@ int pcap_findalldevs_ex(const char *source, struct pcap_rmtauth *auth, pcap_if_t
 	}
 }
 
+/**
+ * @brief 打开一个pcap会话。
+ *
+ * 此函数用于打开一个pcap会话，根据提供的参数来确定会话的类型和属性。
+ *
+ * @param source 源字符串，指定文件、本地设备或远程设备
+ * @param snaplen 捕获数据包的快照长度
+ * @param flags 标志，指定会话的特性
+ * @param read_timeout 读取超时时间
+ * @param auth 远程认证信息
+ * @param errbuf 错误信息缓冲区
+ * @return 返回pcap_t指针，表示打开的会话；如果打开失败，则返回NULL
+ */
 pcap_t *pcap_open(const char *source, int snaplen, int flags, int read_timeout, struct pcap_rmtauth *auth, char *errbuf)
 {
-	char name[PCAP_BUF_SIZE];
-	int type;
-	pcap_t *fp;
-	int status;
+    char name[PCAP_BUF_SIZE];
+    int type;
+    pcap_t *fp;
+    int status;
 
-	/*
-	 * A null device name is equivalent to the "any" device -
-	 * which might not be supported on this platform, but
-	 * this means that you'll get a "not supported" error
-	 * rather than, say, a crash when we try to dereference
-	 * the null pointer.
-	 */
-	if (source == NULL)
-		source = "any";
+    /*
+     * 空设备名称等同于“any”设备 -
+     * 这可能在此平台上不受支持，但这意味着您将获得“不受支持”错误
+     * 而不是，比如，我们尝试取消引用空指针时崩溃。
+     */
+    if (source == NULL)
+        source = "any";
 
-	if (strlen(source) > PCAP_BUF_SIZE)
-	{
-		snprintf(errbuf, PCAP_ERRBUF_SIZE, "The source string is too long. Cannot handle it correctly.");
-		return NULL;
-	}
+    if (strlen(source) > PCAP_BUF_SIZE)
+    {
+        snprintf(errbuf, PCAP_ERRBUF_SIZE, "源字符串太长，无法正确处理。");
+        return NULL;
+    }
 
-	/*
-	 * Determine the type of the source (file, local, remote) and,
-	 * if it's file or local, the name of the file or capture device.
-	 */
-	if (pcap_parsesrcstr(source, &type, NULL, NULL, name, errbuf) == -1)
-		return NULL;
+    /*
+     * 确定源的类型（文件、本地、远程），
+     * 并且如果是文件或本地设备，则获取文件名或捕获设备的名称。
+     */
+    if (pcap_parsesrcstr(source, &type, NULL, NULL, name, errbuf) == -1)
+        return NULL;
 
-	switch (type)
-	{
-	case PCAP_SRC_FILE:
-		return pcap_open_offline(name, errbuf);
+    switch (type)
+    {
+    case PCAP_SRC_FILE:
+        return pcap_open_offline(name, errbuf);
 
-	case PCAP_SRC_IFLOCAL:
-		fp = pcap_create(name, errbuf);
-		break;
+    case PCAP_SRC_IFLOCAL:
+        fp = pcap_create(name, errbuf);
+        break;
 
-	case PCAP_SRC_IFREMOTE:
-		/*
-		 * Although we already have host, port and iface, we prefer
-		 * to pass only 'source' to pcap_open_rpcap(), so that it
-		 * has to call pcap_parsesrcstr() again.
-		 * This is less optimized, but much clearer.
-		 */
-		return pcap_open_rpcap(source, snaplen, flags, read_timeout, auth, errbuf);
+    case PCAP_SRC_IFREMOTE:
+        /*
+         * 虽然我们已经有主机、端口和接口，但我们更喜欢只传递“source”给pcap_open_rpcap()，
+         * 以便它必须再次调用pcap_parsesrcstr()。
+         * 这不太优化，但更清晰。
+         */
+        return pcap_open_rpcap(source, snaplen, flags, read_timeout, auth, errbuf);
 
-	default:
-		pcap_strlcpy(errbuf, "Source type not supported", PCAP_ERRBUF_SIZE);
-		return NULL;
-	}
+    default:
+        pcap_strlcpy(errbuf, "不支持的源类型", PCAP_ERRBUF_SIZE);
+        return NULL;
+    }
 
-	if (fp == NULL)
-		return (NULL);
-	status = pcap_set_snaplen(fp, snaplen);
-	if (status < 0)
-		goto fail;
-	if (flags & PCAP_OPENFLAG_PROMISCUOUS)
-	{
-		status = pcap_set_promisc(fp, 1);
-		if (status < 0)
-			goto fail;
-	}
-	if (flags & PCAP_OPENFLAG_MAX_RESPONSIVENESS)
-	{
-		status = pcap_set_immediate_mode(fp, 1);
-		if (status < 0)
-			goto fail;
-	}
+    if (fp == NULL)
+        return NULL;
+    status = pcap_set_snaplen(fp, snaplen);
+    if (status < 0)
+        goto fail;
+    if (flags & PCAP_OPENFLAG_PROMISCUOUS)
+    {
+        status = pcap_set_promisc(fp, 1);
+        if (status < 0)
+            goto fail;
+    }
+    if (flags & PCAP_OPENFLAG_MAX_RESPONSIVENESS)
+    {
+        status = pcap_set_immediate_mode(fp, 1);
+        if (status < 0)
+            goto fail;
+    }
 #ifdef _WIN32
-	/*
-	 * This flag is supported on Windows only.
-	 * XXX - is there a way to support it with
-	 * the capture mechanisms on UN*X?  It's not
-	 * exactly a "set direction" operation; I
-	 * think it means "do not capture packets
-	 * injected with pcap_sendpacket() or
-	 * pcap_inject()".
-	 */
-	/* disable loopback capture if requested */
-	if (flags & PCAP_OPENFLAG_NOCAPTURE_LOCAL)
-		fp->opt.nocapture_local = 1;
+    /*
+     * 仅在Windows上支持此标志。
+     * XXX - 是否有办法在UNIX上支持它？
+     * 这不完全是一个“设置方向”操作；
+     * 我认为它的意思是“不要捕获使用pcap_sendpacket()或
+     * pcap_inject()注入的数据包”。
+     */
+    /* 如果请求，禁用回环捕获 */
+    if (flags & PCAP_OPENFLAG_NOCAPTURE_LOCAL)
+        fp->opt.nocapture_local = 1;
 #endif /* _WIN32 */
-	status = pcap_set_timeout(fp, read_timeout);
-	if (status < 0)
-		goto fail;
-	status = pcap_activate(fp);
-	if (status < 0)
-		goto fail;
-	return fp;
+    status = pcap_set_timeout(fp, read_timeout);
+    if (status < 0)
+        goto fail;
+    status = pcap_activate(fp);
+    if (status < 0)
+        goto fail;
+    return fp;
 
 fail:
-	DIAG_OFF_FORMAT_TRUNCATION
-	if (status == PCAP_ERROR)
-		snprintf(errbuf, PCAP_ERRBUF_SIZE, "%s: %s",
-		    name, fp->errbuf);
-	else if (status == PCAP_ERROR_NO_SUCH_DEVICE ||
-	    status == PCAP_ERROR_PERM_DENIED ||
-	    status == PCAP_ERROR_PROMISC_PERM_DENIED)
-		snprintf(errbuf, PCAP_ERRBUF_SIZE, "%s: %s (%s)",
-		    name, pcap_statustostr(status), fp->errbuf);
-	else
-		snprintf(errbuf, PCAP_ERRBUF_SIZE, "%s: %s",
-		    name, pcap_statustostr(status));
-	DIAG_ON_FORMAT_TRUNCATION
-	pcap_close(fp);
-	return NULL;
+    DIAG_OFF_FORMAT_TRUNCATION
+    if (status == PCAP_ERROR)
+        snprintf(errbuf, PCAP_ERRBUF_SIZE, "%s: %s",
+                 name, fp->errbuf);
+    else if (status == PCAP_ERROR_NO_SUCH_DEVICE ||
+             status == PCAP_ERROR_PERM_DENIED ||
+             status == PCAP_ERROR_PROMISC_PERM_DENIED)
+        snprintf(errbuf, PCAP_ERRBUF_SIZE, "%s: %s (%s)",
+                 name, pcap_statustostr(status), fp->errbuf);
+    else
+        snprintf(errbuf, PCAP_ERRBUF_SIZE, "%s: %s",
+                 name, pcap_statustostr(status));
+    DIAG_ON_FORMAT_TRUNCATION
+    pcap_close(fp);
+    return NULL;
 }
+
 
 struct pcap_samp *pcap_setsampling(pcap_t *p)
 {
